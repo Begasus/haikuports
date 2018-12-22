@@ -1,0 +1,39 @@
+From aa7985d3e29ff6103711248b0e319e62bf432858 Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Tue, 26 Nov 2019 16:08:45 +0100
+Subject: Make it launch from Tracker/Deskbar
+
+
+diff --git a/sources/main.cpp b/sources/main.cpp
+index b29ae3a..675adb2 100644
+--- a/sources/main.cpp
++++ b/sources/main.cpp
+@@ -23,6 +23,11 @@
+ #include <stdio.h>
+ #include <time.h>
+ 
++#ifdef __HAIKU__
++#include <unistd.h>
++#include <libgen.h>
++#endif // __HAIKU__
++
+ //Le moteur global de jeu dont on hérite
+ #include "Engine.h"
+ //Le moteur du menu
+@@ -114,6 +119,13 @@ public:
+ //*********************************************************************** : le main.
+ int main(int argc, char* argv[])
+ {
++	#ifdef __HAIKU__
++	char *binpath = realpath(argv[0], NULL);
++	if (binpath != NULL) {
++		chdir(dirname(binpath));
++		free(binpath);
++	}
++	#endif // __HAIKU__
+ 
+     CMyEngine Engine;
+ 	Engine.Init();
+-- 
+2.24.0
+

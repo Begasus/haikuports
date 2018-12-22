@@ -1,0 +1,55 @@
+SUMMARY="Too Hard For You"
+DESCRIPTION="2H4U, which stands for Too Hard For You, is an open source game, \
+and a mix between a Tetris-like game and a wall breaker. It requires good \
+reflexes, coordination, and ambidexters should have some advantages. Will \
+2H4U be too hard for you ?"
+HOMEPAGE="https://sourceforge.net/projects/toohardforyou/"
+COPYRIGHT="2006-2007 Pierre Lagouge
+	2006-2007 Pierre-Yves Ricau"
+LICENSE="GNU GPL v2"
+REVISION="1"
+SOURCE_URI="https://sourceforge.net/projects/toohardforyou/files/2H4U/2H4U%20v1.3/2H4U-1.3_SOURCES.tar.gz"
+CHECKSUM_SHA256="2da1e593b43887617c78d2709397be2e57e9f67b1840350430d802d31b18e9f2"
+SOURCE_FILENAME="2H4U-$portVersion.tar.gz"
+SOURCE_DIR="2H4U"
+PATCHES="2h4u-$portVersion.patchset"
+
+ARCHITECTURES="x86_gcc2 x86 x86_64"
+
+PROVIDES="
+	2h4u = $portVersion
+	app:2H4U = $portVersion
+	"
+REQUIRES="
+	haiku
+	lib:libSDL_1.2
+	lib:libSDL_image_1.2
+	lib:libSDL_mixer_1.2
+	lib:libSDL_ttf_2.0
+	"
+
+BUILD_REQUIRES="
+	haiku_devel
+	devel:libSDL
+	devel:libSDL_image
+	devel:libSDL_mixer
+	devel:libSDL_ttf
+	"
+BUILD_PREREQUIRES="
+	cmd:gcc
+	cmd:make
+	"
+
+BUILD()
+{
+	cd scripts
+	make $jobArgs
+}
+
+INSTALL()
+{
+	install -d -m 644 $appsDir/2H4U/data
+	install -m 755 -t $appsDir/2H4U 2H4U
+	cp -R data/* $appsDir/2H4U/data
+	addAppDeskbarSymlink $appsDir/2H4U/2H4U
+}
