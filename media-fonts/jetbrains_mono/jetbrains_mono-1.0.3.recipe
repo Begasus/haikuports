@@ -7,7 +7,7 @@ and the less effort the brain needs to process them."
 HOMEPAGE="https://www.jetbrains.com/lp/mono/"
 COPYRIGHT="2020 Philipp Nurullin \
 	2020 Konstantin Bulenkov \
-	The whole JetBrains Team"
+	2020 JetBrains s.r.o."
 LICENSE="Apache v2"
 REVISION="1"
 SOURCE_URI="https://github.com/JetBrains/JetBrainsMono/archive/v$portVersion.tar.gz"
