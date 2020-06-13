@@ -1,0 +1,145 @@
+From 492d17dd9d72545b7a6388f5717f1a664b0e1b95 Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Sat, 13 Jun 2020 21:45:28 +0000
+Subject: Fix1
+
+
+diff --git a/features/meson.build b/features/meson.build
+index a7fbb07..d754844 100644
+--- a/features/meson.build
++++ b/features/meson.build
+@@ -41,7 +41,7 @@ libm_dep = cc.find_library('m', required: false, dirs: lib_dirs)
+ 
+ # On some platforms the network functions (e.g., `socket()`) that we need are found in
+ # libc, on others they are found in libsocket and libnsl.
+-libsocket_dep = cc.find_library('socket', required: false, dirs: lib_dirs)
++libsocket_dep = cc.find_library('network', required: false, dirs: lib_dirs)
+ libnsl_dep = cc.find_library('nsl', required: false, dirs: lib_dirs)
+ 
+ # On some platforms `dladdr()` and related functions are found in libc,
+-- 
+2.26.0
+
+
+From 9243e2869a4ade914cb600527d36c1baf6e76c9f Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Sat, 13 Jun 2020 21:47:24 +0000
+Subject: Fix2
+
+
+diff --git a/src/cmd/ksh93/sh/jobs.c b/src/cmd/ksh93/sh/jobs.c
+index 5ad42c0..e165e6c 100644
+--- a/src/cmd/ksh93/sh/jobs.c
++++ b/src/cmd/ksh93/sh/jobs.c
+@@ -57,6 +57,10 @@
+ 
+ #define NJOB_SAVELIST 4
+ 
++#ifndef WCOREDUMP
++#define WCOREDUMP
++#endif
++
+ //
+ // This struct saves a link list of processes that have non-zero exit status,
+ // have had $! saved, but haven't been waited for.
+diff --git a/src/lib/libast/tests/cdt/trehash.c b/src/lib/libast/tests/cdt/trehash.c
+index f39610f..60faf76 100644
+--- a/src/lib/libast/tests/cdt/trehash.c
++++ b/src/lib/libast/tests/cdt/trehash.c
+@@ -51,6 +51,10 @@
+ #define INSERT 001 /* to tell if an object was inserted */
+ #define DELETE 002 /* to tell if an object was deleted  */
+ 
++#ifndef WCOREDUMP
++#define WCOREDUMP
++#endif
++
+ typedef struct _obj_s {
+     Dtlink_t link;
+     unsigned int flag; /* INSERT/DELETE state           */
+-- 
+2.26.0
+
+
+From 6f1596a06a1c331aebfdb82d268b1a278c52515e Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Sat, 13 Jun 2020 21:48:43 +0000
+Subject: Fix3
+
+
+diff --git a/src/lib/libast/misc/translate.c b/src/lib/libast/misc/translate.c
+index d84bfa9..7ecb50d 100644
+--- a/src/lib/libast/misc/translate.c
++++ b/src/lib/libast/misc/translate.c
+@@ -202,6 +202,7 @@ static Catalog_t *init(char *s) {
+      * we assume there are no messages after a gap of GAP
+      * missing messages
+      */
++#if _LIBCPP_HAS_CATOPEN
+     cp->messages = dtopen(&state.message_disc, Dtset);
+     if (cp->messages) {
+         n = m = 0;
+@@ -221,6 +222,7 @@ static Catalog_t *init(char *s) {
+         }
+     }
+     catclose(d);
++#endif // _LIBCPP_HAS_CATOPEN
+     return cp;
+ }
+ 
+@@ -360,7 +362,9 @@ char *translate(const char *loc, const char *cmd, const char *cat, const char *m
+     if (cp->locale != loc || cp->nlspath != nlspath) {
+         cp->locale = loc;
+         cp->nlspath = nlspath;
++#if _LIBCPP_HAS_CATOPEN
+         if (cp->cat != NOCAT) catclose(cp->cat);
++#endif
+         if ((cp->cat = find(cp->locale, cp->name)) == NOCAT) {
+             cp->debug = !strcmp(cp->locale, "debug");
+         } else {
+@@ -382,7 +386,9 @@ char *translate(const char *loc, const char *cmd, const char *cat, const char *m
+          * get the translated message
+          */
+ 
++#if _LIBCPP_HAS_CATOPEN
+         r = catgets(cp->cat, mp->set, mp->seq, msg);
++#endif
+         if (r != (char *)msg) {
+             if (!strcmp(r, (char *)msg)) {
+                 r = (char *)msg;
+-- 
+2.26.0
+
+
+From 021b991443240a1ebf9425c390bca09c449119c0 Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Sat, 13 Jun 2020 21:50:30 +0000
+Subject: Fix4
+
+
+diff --git a/src/cmd/ksh93/cmds/uname.c b/src/cmd/ksh93/cmds/uname.c
+index e165eac..9cfb0ea 100644
+--- a/src/cmd/ksh93/cmds/uname.c
++++ b/src/cmd/ksh93/cmds/uname.c
+@@ -168,18 +168,12 @@ int b_uname(int argc, char **argv, Shbltin_t *context) {
+     if (flags & OPT_hostid) {
+ #if _mem_idnumber_utsname
+         sep = output(sep, flags, OPT_hostid, ut.idnumber, "hostid");
+-#else
+-        sfsprintf(buf, sizeof(buf), "%08x", gethostid());
+-        sep = output(sep, flags, OPT_hostid, buf, "hostid");
+ #endif
+     }
+     if (flags & OPT_domain) {
+ #if AST_SUNOS
+         // TODO: Fix this for Solaris.
+         sep = output(sep, flags, OPT_domain, "domain.unknown", "domain");
+-#else
+-        getdomainname(buf, sizeof(buf));
+-        sep = output(sep, flags, OPT_domain, buf, "domain");
+ #endif
+     }
+     if (sep) sfputc(sfstdout, '\n');
+-- 
+2.26.0
+

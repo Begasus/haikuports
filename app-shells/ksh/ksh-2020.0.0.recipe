@@ -1,0 +1,78 @@
+SUMMARY="The Original AT&T Korn Shell"
+DESCRIPTION="The KornShell language was designed and developed by David G. Korn \
+at AT&T Bell Laboratories.
+It is an interactive command language that provides access to the UNIX system \
+and to many other systems, on the many different computers and workstations on \
+which it is implemented.
+The KornShell language is also a complete, powerful, high-level programming \
+language for writing applications, often more easily and quickly than with \
+other high-level languages.
+This makes it especially suitable for prototyping.
+There are two other widely used shells, the Bourne shell developed by Steven \
+Bourne at AT&T Bell Laboratories, and the C shell developed by Bill Joy at the \
+University of California. ksh has the best features of both, plus many new \
+features of its own.
+Thus ksh can do much to enhance your productivity and the quality of your work, \
+both in interacting with the system, and in programming. ksh programs are \
+easier to write, and are more concise and readable than programs written in a \
+lower level language such as C.
+
+The new version of ksh has the functionality of other scripting languages such \
+as awk, icon, perl, rexx, and tcl.
+For this and many other reasons, ksh is a much better scripting language than \
+any of the other popular shells.
+The code size for ksh is larger than the Bourne shell or C shell programs.
+The revised version is even larger."
+HOMEPAGE="http://kornshell.org/"
+COPYRIGHT="1995 Morris I. Bolsky and David G. Korn"
+LICENSE="EPL v 1.0"
+REVISION="1"
+SOURCE_URI="https://github.com/att/ast/archive/$portVersion.tar.gz"
+CHECKSUM_SHA256="76597c96c4f94423b9225b5de50ea54be08d5bbaa1e0e594a7eec603bd60ecaf"
+SOURCE_FILENAME="ksh-$portVersion.tar.gz"
+SOURCE_DIR="ast-2020.0.0"
+PATCHES="ksh-$portVersion.patchset"
+
+ARCHITECTURES="!x86_gcc2 x86 x86_64"
+SECONDARY_ARCHITECTURES="x86"
+
+PROVIDES="
+	ksh$secondaryArchSuffix = $portVersion
+	cmd:ksh
+	cmd:shcomp
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libexecinfo$secondaryArchSuffix
+	lib:libiconv$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libexecinfo$secondaryArchSuffix
+	devel:libiconv$secondaryArchSuffix
+	"
+
+BUILD_PREREQUIRES="
+	cmd:ed
+	cmd:gcc$secondaryArchSuffix
+	cmd:meson
+	cmd:ninja
+	"
+
+BUILD()
+{
+	mkdir -p build && cd build
+	meson --prefix=$prefix --buildtype=plain ..
+	ninja
+}
+
+INSTALL()
+{
+	cd build
+	ninja install
+
+	mkdir -p $manDir/man1
+	cp $prefix/share/man/man1/* $manDir/man1
+	rm -rf $prefix/share
+}
