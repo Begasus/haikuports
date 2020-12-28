@@ -1,0 +1,56 @@
+SUMMARY="A graphical tool for configurations of TuxPaint"
+DESCRIPTION="Tux Paint is a free, award-winning drawing program for children \
+ages 3 to 12 (for example, preschool and K-6). Tux Paint is used \
+in schools and around the world as a computer literacy drawing activity. \
+It combines an easy-to-use interface, fun sound effects, and an \
+encouraging cartoon mascot who guides children as they use the program."
+HOMEPAGE="http://www.tuxpaint.org/"
+COPYRIGHT="2002-2020 Bill Kendrick and others"
+LICENSE="GNU GPL v2"
+REVISION="1"
+SOURCE_URI="http://downloads.sf.net/tuxpaint/tuxpaint-config-$portVersion.tar.gz"
+CHECKSUM_SHA256="e52428deb7d51923971dac7cf496dedf1a8ca7dba82b4202c8accf0a8fbd85ee"
+SOURCE_DIR="tuxpaint-config-$portVersion"
+PATCHES="tuxpaint_config-$portVersion.patchset"
+
+ARCHITECTURES="!x86_gcc2 ?x86_64"
+SECONDARY_ARCHITECTURES="?x86"
+
+PROVIDES="
+	tuxpaint_config$secondaryArchSuffix = $portVersion
+	cmd:tuxpaint_config = $portVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libfltk$secondaryArchSuffix
+	lib:libintl$secondaryArchSuffix
+	lib:libpaper$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libfltk$secondaryArchSuffix
+	devel:libintl$secondaryArchSuffix
+	devel:libpaper$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:make
+	cmd:gcc$secondaryArchSuffix
+	cmd:pkg_config$secondaryArchSuffix
+	"
+
+BUILD()
+{
+	make clean
+	make PREFIX=$prefix DATA_PREFIX=$dataDir DOC_PREFIX=$docDir \
+		MAN_PREFIX=$manDir LOCALE_PREFIX=$dataDir/locale
+}
+
+INSTALL()
+{
+	make PREFIX=$prefix DATA_PREFIX=$dataDir DOC_PREFIX=$docDir \
+		MAN_PREFIX=$manDir LOCALE_PREFIX=$dataDir/locale  install
+
+	# remove not needed files
+	rm -rf $prefix/{share,X11R6}
+}

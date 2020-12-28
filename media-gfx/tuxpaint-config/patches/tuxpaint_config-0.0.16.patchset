@@ -1,0 +1,91 @@
+From 25a7d54e57387888d65fcd7e8101c851e120389a Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Mon, 28 Dec 2020 15:30:13 +0000
+Subject: Add -lintl to Makefile
+
+
+diff --git a/Makefile b/Makefile
+index 2aeb87b..c93f4c4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -78,6 +78,7 @@ FLTK_CFLAGS=`fltk-config --cxxflags`
+ FLTK_LIBS=`fltk-config --ldflags`
+ 
+ PAPER_LIB=-lpaper
++INTL_LIB=-lintl
+ 
+ # Default CFLAGS:
+ CFLAGS=-O2 -Wall
+@@ -334,7 +335,7 @@ tuxpaint-config:	obj/tuxpaint-config.o obj/tuxpaint-config2.o	\
+ 	@echo Linking
+ 	$(CXX) $(ALL_CFLAGS) -o tuxpaint-config obj/tuxpaint-config.o 	\
+ 			obj/tuxpaint-config2.o obj/defaults.o $(ARCH_LIBS) \
+-			$(FLTK_LIBS) $(ARCH_LINKS) $(PAPER_LIB)
++			$(FLTK_LIBS) $(ARCH_LINKS) $(PAPER_LIB) ${INTL_LIB}
+ 
+ 
+ # Build the object for the program!
+-- 
+2.28.0
+
+
+From bdc6db1828475d4588ab3f34199066bb5289325f Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Mon, 28 Dec 2020 17:06:58 +0000
+Subject: Fix config path
+
+
+diff --git a/Makefile b/Makefile
+index c93f4c4..4065bcb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -18,6 +18,10 @@ else
+        VER_DATE=$(shell date "+%Y-%m-%d")
+ endif
+ 
++SYSNAME:=$(shell uname -s)
++	ifeq ($(SYSNAME),Haiku)
++		OS:=haiku
++endif
+ 
+ # Where to install things:
+ 
+@@ -49,6 +53,9 @@ else
+   CONFDIR=$(PREFIX)/etc/tuxpaint
+ endif
+ 
++ifeq ($(SYSNAME),Haiku)
++  CONFDIR:=$(shell finddir B_USER_SETTINGS_DIRECTORY)/TuxPaint
++endif
+ 
+ # Icons and launchers:
+ 
+diff --git a/src/tuxpaint-config2.cxx b/src/tuxpaint-config2.cxx
+index 37c5ee5..df469e3 100644
+--- a/src/tuxpaint-config2.cxx
++++ b/src/tuxpaint-config2.cxx
+@@ -255,8 +255,8 @@ static void construct_conf_filename(int user)
+       snprintf(conf_filename, sizeof(conf_filename), "%s/tuxpaint.cfg", savedir);
+       free(savedir);
+     }
+-#elif defined(__BEOS__)      
+-      strcpy(conf_filename, "tuxpaint.cfg");
++#elif defined(__BEOS__) || defined(__HAIKU__)
++      strcpy(conf_filename, "config/settings/TuxPaint/tuxpaint.cfg");
+ #elif defined(__APPLE__)
+       if (getenv("HOME") != NULL)
+       {
+@@ -284,8 +284,8 @@ static void construct_conf_filename(int user)
+       snprintf(conf_filename, sizeof(conf_filename), "%s/tuxpaint.cfg", appdir);
+       free(appdir);
+     }
+-#elif defined(__BEOS__)     
+-      strcpy(conf_filename, "tuxpaint.cfg");
++#elif defined(__BEOS__) || defined(__HAIKU__)
++      strcpy(conf_filename, "config/settings/TuxPaint/tuxpaint.cfg");
+ #elif defined(__APPLE__)
+       system("mkdir -p '/Library/Application Support/TuxPaint'");
+       strcpy(conf_filename, "/Library/Application Support/TuxPaint/tuxpaint.cfg");     
+-- 
+2.28.0
+
