@@ -11,7 +11,7 @@ you do not need to own Civilization to play Freeciv."
 HOMEPAGE="http://www.freeciv.org/"
 COPYRIGHT="1996-2020 The Freeciv Team"
 LICENSE="GNU GPL v2"
-REVISION="1"
+REVISION="2"
 SOURCE_URI="https://netix.dl.sourceforge.net/project/freeciv/Freeciv%202.6/$portVersion/freeciv-$portVersion.tar.bz2"
 CHECKSUM_SHA256="77432e027557a9eb407dac730ae9810ee172abe37111deb017fe72b8183ff8d1"
 PATCHES="freeciv-$portVersion.patchset"
@@ -35,6 +35,7 @@ PROVIDES="
 	freeciv$secondaryArchSuffix = $portVersion
 	app:FreeCiv = $portVersion
 	cmd:freeciv_manual$commandSuffix
+	cmd:freeciv_mp_cli$commandSuffix
 	cmd:freeciv_sdl$commandSuffix
 	cmd:freeciv_server$commandSuffix
 	lib:libfreeciv$secondaryArchSuffix
@@ -90,7 +91,7 @@ BUILD()
 {
 	autoreconf -vfi
 	CFLAGS="-O2 -pipe" runConfigure --omit-dirs binDir ./configure \
-		--bindir=$commandBinDir --enable-client=sdl --enable-fcmp=no \
+		--bindir=$commandBinDir --enable-client=sdl --enable-fcmp=cli \
 		--enable-sys-lua --enable-shared --disable-static
 	make $jobArgs
 }

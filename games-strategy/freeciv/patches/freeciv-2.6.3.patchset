@@ -1,354 +1,236 @@
-From 99288b21d4e75ac960e9fe37c05115b705709069 Mon Sep 17 00:00:00 2001
-From: Bach Nguyen <bach5000@gmail.com>
-Date: Fri, 26 Oct 2018 17:45:41 +0000
-Subject: Haiku support #1
-
-
-diff --git a/configure.ac b/configure.ac
-index 9cb722a..6aa18a8 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -178,6 +178,7 @@ AM_CONDITIONAL(SERVER, test x$server = xyes)
- dnl Host type variable defaults
- MINGW=no
- AMIGA=no
-+HAIKU=no
- 
- dnl Settings specific to host OS
- case "$host_os" in
-@@ -193,6 +194,9 @@ case "$host_os" in
-     dnl Without WINSOCK2, use: LIBS="$LIBS -lwsock32"
-     LIBS="${LIBS} -lws2_32"
-     ;;
-+  *haiku*)
-+    dnl Haiku-specific settings
-+    HAIKU=yes ;;
- esac
- 
- dnl Networking headers
-@@ -1357,9 +1361,15 @@ if test x"$MINGW" = xyes; then
-   fi
- else
-   FC_CONF_PATH="$sysconfdir/freeciv"
--  DEFAULT_DATA_PATH=".:data:~/.freeciv/$DATASUBDIR:$datadir/freeciv"
--  DEFAULT_SAVE_PATH=".:~/.freeciv/saves"
--  DEFAULT_SCENARIO_PATH=".:data/scenarios:~/.freeciv/$DATASUBDIR/scenarios:~/.freeciv/scenarios:$datadir/freeciv/scenarios"
-+  if test x"$HAIKU" = xyes; then
-+    DEFAULT_DATA_PATH=".:data:~/config/settings/freeciv/$DATASUBDIR:$datadir/freeciv"
-+    DEFAULT_SAVE_PATH=".:~/config/settings/freeciv/saves"
-+    DEFAULT_SCENARIO_PATH=".:data/scenarios:~/config/settings/freeciv/$DATASUBDIR/scenarios:~/config/settings/freeciv/scenarios:$datadir/freeciv/scenarios"
-+  else
-+    DEFAULT_DATA_PATH=".:data:~/.freeciv/$DATASUBDIR:$datadir/freeciv"
-+    DEFAULT_SAVE_PATH=".:~/.freeciv/saves"
-+    DEFAULT_SCENARIO_PATH=".:data/scenarios:~/.freeciv/$DATASUBDIR/scenarios:~/.freeciv/scenarios:$datadir/freeciv/scenarios"
-+  fi
- fi
- CPPFLAGS="$CPPFLAGS -DFC_CONF_PATH=\"\\\"$FC_CONF_PATH\\\"\""
- CPPFLAGS="$CPPFLAGS -DDEFAULT_DATA_PATH=\"\\\"$DEFAULT_DATA_PATH\\\"\""
--- 
-2.24.0
-
-
-From 9855a04556a64cdad9e603953a0756f438db85d2 Mon Sep 17 00:00:00 2001
-From: Jerome Duval <jerome.duval@gmail.com>
-Date: Sun, 15 Dec 2019 20:30:55 +0100
-Subject: Use settings directory.
+From c1a8bfb07fa2326db602e266d182ed52d7ad5a04 Mon Sep 17 00:00:00 2001
+From: Begasus <begasus@gmail.com>
+Date: Sat, 2 Jan 2021 16:34:22 +0000
+Subject: applying patch
+ 0034-Make-config-settings-freeciv-the-storage-directory-u.patch
 
 
 diff --git a/client/connectdlg_common.c b/client/connectdlg_common.c
-index 2ec9b13..7fce908 100644
+index 2ec9b13..82b2135 100644
 --- a/client/connectdlg_common.c
 +++ b/client/connectdlg_common.c
-@@ -26,6 +26,12 @@ Freeciv - Copyright (C) 2004 - The Freeciv Project
- #include <windows.h>
+@@ -1,4 +1,4 @@
+-/**********************************************************************
++/***********************************************************************
+ Freeciv - Copyright (C) 2004 - The Freeciv Project
+    This program is free software; you can redistribute it and / or modify
+    it under the terms of the GNU General Public License as published by
+@@ -9,7 +9,7 @@ Freeciv - Copyright (C) 2004 - The Freeciv Project
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+-***********************************************************************/ 
++***********************************************************************/
+ #ifdef HAVE_CONFIG_H
+ #include <fc_config.h>
  #endif
- 
-+#ifdef __HAIKU__
-+  #include <libgen.h>
-+  #include <FindDirectory.h>
-+  #include <fs_info.h>
-+#endif
-+
- #ifdef FREECIV_HAVE_SYS_TYPES_H
- #include <sys/types.h>		/* fchmod */
- #endif
-@@ -274,6 +280,25 @@ bool client_start_server(void)
- 
- #ifdef HAVE_USABLE_FORK
-   {
-+#ifdef __HAIKU__
-+    static char fullnamesaves[PATH_MAX];
-+    static char fullnamescenarios[PATH_MAX];
-+    dev_t bootdev = dev_for_path("/boot");
-+    if (bootdev < 0)
-+      bootdev = 0;
-+    if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+      fullnamesaves, sizeof(fullnamesaves) - 1) != B_OK) {
-+      log_error(_("Cannot find your settings directory"));
-+    }
-+    strlcat(fullnamesaves, DIR_SEPARATOR "freeciv" DIR_SEPARATOR "saves",
-+      sizeof(fullnamesaves));
-+    if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+      fullnamescenarios, sizeof(fullnamescenarios) - 1) != B_OK) {
-+      log_error(_("Cannot find your settings directory"));
-+    }
-+    strlcat(fullnamescenarios, DIR_SEPARATOR "freeciv" DIR_SEPARATOR "scenarios",
-+      sizeof(fullnamescenarios));
-+#endif
-     int argc = 0;
-     const int max_nargs = 23;
-     char *argv[max_nargs + 1];
-@@ -293,9 +318,17 @@ bool client_start_server(void)
-     argv[argc++] = "1";
-     argv[argc++] = "-e";
-     argv[argc++] = "--saves";
-+#ifdef __HAIKU__
-+    argv[argc++] = fullnamesaves;
-+#else
-     argv[argc++] = "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR "saves";
-+#endif
-     argv[argc++] = "--scenarios";
-+#ifdef __HAIKU__
-+    argv[argc++] = fullnamescenarios;
-+#else
-     argv[argc++] = "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR "scenarios";
-+#endif
-     argv[argc++] = "-A";
-     argv[argc++] = "none";
-     if (logfile) {
-@@ -431,10 +464,27 @@ bool client_start_server(void)
+@@ -431,6 +431,17 @@ bool client_start_server(void)
      free(savefile_in_local_encoding);
    }
  
-+#ifdef __HAIKU__
-+  dev_t bootdev = dev_for_path("/boot");
-+  if (bootdev < 0)
-+    bootdev = 0;
-+  if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+    savesdir, sizeof(savesdir) - 1) == B_OK)
-+    sz_strlcat(savesdir, "freeciv" DIR_SEPARATOR "saves");
-+  else
-+#endif
++#ifdef HAIKU
++  interpret_tilde(savesdir, sizeof(savesdir),
++                  "~" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++                  "freeciv" DIR_SEPARATOR "saves");
++  internal_to_local_string_buffer(savesdir, savescmdline, sizeof(savescmdline));
++
++  interpret_tilde(scensdir, sizeof(scensdir),
++                  "~" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++                  "freeciv" DIR_SEPARATOR "scenarios");
++  internal_to_local_string_buffer(scensdir, scenscmdline, sizeof(scenscmdline));
++#else  /* HAIKU */
    interpret_tilde(savesdir, sizeof(savesdir),
                    "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR "saves");
    internal_to_local_string_buffer(savesdir, savescmdline, sizeof(savescmdline));
--
-+#ifdef __HAIKU__
-+  dev_t bootdev = dev_for_path("/boot");
-+  if (bootdev < 0)
-+    bootdev = 0;
-+  if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+    scensdir, sizeof(scensdir) - 1) == B_OK)
-+    sz_strlcat(scensdir, "freeciv" DIR_SEPARATOR "scenarios");
-+  else
-+#endif
+@@ -438,6 +449,7 @@ bool client_start_server(void)
    interpret_tilde(scensdir, sizeof(scensdir),
                    "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR "scenarios");
    internal_to_local_string_buffer(scensdir, scenscmdline, sizeof(scenscmdline));
-@@ -599,8 +649,20 @@ void send_client_wants_hack(const char *filename)
++#endif /* HAIKU */
+ 
+   if (are_deprecation_warnings_enabled()) {
+     depr = " --warnings";
+diff --git a/configure.ac b/configure.ac
+index 881d9d3..ed7ca15 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -714,6 +714,8 @@ case "$host_os" in
+ 
+   *haiku*)
+     dnl Haiku specific settings
++    HAIKU=yes
++    AC_DEFINE([HAIKU], [1], [Built for Haiku OS])
+     AC_DEFINE([ALWAYS_ROOT], [1], [Can execute program as root - Haiku])
+     LIBS="$LIBS -lnetwork"
+     ;;
+@@ -1355,7 +1357,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <signal.h>]], [[signal (SIGPIPE, S
+ dnl export where the datadir is going to be installed
+ FC_EXPAND_DIR(FREECIV_DATADIR, "$datadir/freeciv")
+ 
+-if test x"$MINGW" = xyes; then
++if test x"$MINGW" = xyes ; then
+   DEFAULT_SAVE_PATH=".;~\\\\\\\\.freeciv\\\\\\\\saves"
+   if test x$crosser = xyes ; then
+     FC_CONF_PATH="../etc/freeciv"
+@@ -1366,6 +1368,11 @@ if test x"$MINGW" = xyes; then
+     DEFAULT_DATA_PATH=".;data;~\\\\\\\\.freeciv\\\\\\\\$DATASUBDIR;$datadir\\\\\\\\freeciv"
+     DEFAULT_SCENARIO_PATH=".;data\\\\\\\\scenarios;~\\\\\\\\.freeciv\\\\\\\\$DATASUBDIR\\\\\\\\scenarios;~\\\\\\\\.freeciv\\\\\\\\scenarios;$datadir\\\\\\\\freeciv\\\\\\\\scenarios"
+   fi
++elif test x"$HAIKU" = xyes ; then
++  FC_CONF_PATH="$sysconfdir/freeciv"
++  DEFAULT_DATA_PATH=".:data:~/config/settings/freeciv/$DATASUBDIR:$datadir/freeciv"
++  DEFAULT_SAVE_PATH=".:~/config/settings/freeciv/saves"
++  DEFAULT_SCENARIO_PATH=".:data/scenarios:~/config/settings/freeciv/$DATASUBDIR/scenarios:~/config/settings/freeciv/scenarios:$datadir/freeciv/scenarios"
+ else
+   FC_CONF_PATH="$sysconfdir/freeciv"
+   DEFAULT_DATA_PATH=".:data:~/.freeciv/$DATASUBDIR:$datadir/freeciv"
+diff --git a/tools/mpcmdline.c b/tools/mpcmdline.c
+index d2e6699..516c65f 100644
+--- a/tools/mpcmdline.c
++++ b/tools/mpcmdline.c
+@@ -132,7 +132,14 @@ int fcmp_parse_cmdline(int argc, char *argv[])
+     } else {
+       static char pfx_buf[500];
+ 
++#ifdef HAIKU
++      snprintf(pfx_buf, sizeof(pfx_buf),
++               "%s" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++               "freeciv", home);
++#else  /* HAIKU */
+       snprintf(pfx_buf, sizeof(pfx_buf), "%s" DIR_SEPARATOR ".freeciv", home);
++#endif /* HAIKU */
++
+       fcmp.inst_prefix = pfx_buf;
+     }
+   }
+-- 
+2.28.0
+
+
+From b592e9e3e119f5d7f8ed28f0719028982a5f8794 Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Sat, 2 Jan 2021 16:37:08 +0000
+Subject: Fix missing save dirs
+
+
+diff --git a/client/connectdlg_common.c b/client/connectdlg_common.c
+index 82b2135..d842efb 100644
+--- a/client/connectdlg_common.c
++++ b/client/connectdlg_common.c
+@@ -293,9 +293,19 @@ bool client_start_server(void)
+     argv[argc++] = "1";
+     argv[argc++] = "-e";
+     argv[argc++] = "--saves";
++#ifdef HAIKU
++    argv[argc++] = "~" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++                  "freeciv" DIR_SEPARATOR "saves";
++#else  /* HAIKU */
+     argv[argc++] = "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR "saves";
++#endif  /* HAIKU */
+     argv[argc++] = "--scenarios";
++#ifdef HAIKU
++    argv[argc++] = "~" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++                  "freeciv" DIR_SEPARATOR "scenarios";
++#else  /* HAIKU */
+     argv[argc++] = "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR "scenarios";
++#endif  /* HAIKU */
+     argv[argc++] = "-A";
+     argv[argc++] = "none";
+     if (logfile) {
+@@ -611,8 +621,14 @@ void send_client_wants_hack(const char *filename)
      }
  
      /* get the full filename path */
-+    
-+#ifdef __HAIKU__
-+    dev_t bootdev = dev_for_path("/boot");
-+    if (bootdev < 0)
-+      bootdev = 0;
-+    if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+      challenge_fullname, sizeof(challenge_fullname) - 1) != B_OK) {
-+      log_error(_("Cannot find your settings directory"));
-+    }
-+    sz_strlcat(challenge_fullname, DIR_SEPARATOR "freeciv" DIR_SEPARATOR);
-+#else
++#ifdef HAIKU
++    interpret_tilde(challenge_fullname, sizeof(challenge_fullname),
++                    "~" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++                  "freeciv" DIR_SEPARATOR);
++#else  /* HAIKU */
      interpret_tilde(challenge_fullname, sizeof(challenge_fullname),
                      "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR);
-+#endif
++#endif  /* HAIKU */
      make_dir(challenge_fullname);
  
      sz_strlcat(challenge_fullname, filename);
 diff --git a/client/options.c b/client/options.c
-index c8fb482..223eb83 100644
+index c069b6c..820839b 100644
 --- a/client/options.c
 +++ b/client/options.c
-@@ -19,6 +19,11 @@
- #include <string.h>
- #include <sys/stat.h>
- #include <sys/types.h>
-+#ifdef __HAIKU__
-+  #include <libgen.h>
-+  #include <FindDirectory.h>
-+  #include <fs_info.h>
-+#endif
- 
- /* utility */
- #include "capability.h"
-@@ -5148,6 +5153,20 @@ static const char *get_current_option_file_name(void)
-   } else {
- #ifdef OPTION_FILE_NAME
-     fc_strlcpy(name_buffer, OPTION_FILE_NAME, sizeof(name_buffer));
-+#else
-+#ifdef __HAIKU__
-+    static char fullname[PATH_MAX];
-+    dev_t bootdev = dev_for_path("/boot");
-+    if (bootdev < 0)
-+      bootdev = 0;
-+    if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+      fullname, sizeof(fullname) - 1) != B_OK) {
-+      log_error(_("Cannot find your settings directory"));
-+      return NULL;
-+    }
-+    fc_snprintf(name_buffer, sizeof(name_buffer),
-+                "%s" DIR_SEPARATOR "freeciv" DIR_SEPARATOR NEW_OPTION_FILE_NAME,
-+                fullname, MAJOR_NEW_OPTION_FILE_NAME, MINOR_NEW_OPTION_FILE_NAME);
- #else
-     name = user_home_dir();
-     if (!name) {
-@@ -5157,6 +5176,7 @@ static const char *get_current_option_file_name(void)
-     fc_snprintf(name_buffer, sizeof(name_buffer),
-                 "%s" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR NEW_OPTION_FILE_NAME,
-                 name, MAJOR_NEW_OPTION_FILE_NAME, MINOR_NEW_OPTION_FILE_NAME);
-+#endif
- #endif /* OPTION_FILE_NAME */
-   }
-   log_verbose("settings file is %s", name_buffer);
-@@ -5194,11 +5214,24 @@ static const char *get_last_option_file_name(bool *allow_digital_boolean)
-     int major, minor;
-     struct stat buf;
- 
-+#ifdef __HAIKU__
-+    static char fullname[PATH_MAX];
-+    dev_t bootdev = dev_for_path("/boot");
-+    if (bootdev < 0)
-+      bootdev = 0;
-+    if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+      fullname, sizeof(fullname) - 1) != B_OK) {
-+      log_error(_("Cannot find your settings directory"));
-+      return NULL;
-+    }
-+    name = fullname;
-+#else
-     name = user_home_dir();
-     if (!name) {
+@@ -5153,9 +5153,16 @@ static const char *get_current_option_file_name(void)
        log_error(_("Cannot find your home directory"));
        return NULL;
      }
-+#endif
-     for (major = MAJOR_NEW_OPTION_FILE_NAME,
-          minor = MINOR_NEW_OPTION_FILE_NAME;
-          major >= FIRST_MAJOR_NEW_OPTION_FILE_NAME; major--) {
-@@ -5206,7 +5239,11 @@ static const char *get_last_option_file_name(bool *allow_digital_boolean)
++#ifdef HAIKU
++    fc_snprintf(name_buffer, sizeof(name_buffer),
++                "%s" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++                "freeciv" DIR_SEPARATOR NEW_OPTION_FILE_NAME,
++                name, MAJOR_NEW_OPTION_FILE_NAME, MINOR_NEW_OPTION_FILE_NAME);
++#else  /* HAIKU */
+     fc_snprintf(name_buffer, sizeof(name_buffer),
+                 "%s" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR NEW_OPTION_FILE_NAME,
+                 name, MAJOR_NEW_OPTION_FILE_NAME, MINOR_NEW_OPTION_FILE_NAME);
++#endif  /* HAIKU */
+ #endif /* OPTION_FILE_NAME */
+   }
+   log_verbose("settings file is %s", name_buffer);
+@@ -5205,8 +5212,14 @@ static const char *get_last_option_file_name(bool *allow_digital_boolean)
                ? minor >= FIRST_MINOR_NEW_OPTION_FILE_NAME 
                : minor >= 0); minor--) {
          fc_snprintf(name_buffer, sizeof(name_buffer),
-+#ifdef __HAIKU__
-+                    "%s" DIR_SEPARATOR "freeciv" DIR_SEPARATOR NEW_OPTION_FILE_NAME,
-+#else
++#ifdef HAIKU
++                    "%s" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++                    "freeciv" DIR_SEPARATOR NEW_OPTION_FILE_NAME,
++                    name, major, minor);
++#else /* HAIKU */
                      "%s" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR NEW_OPTION_FILE_NAME,
-+#endif
                      name, major, minor);
++#endif /* HAIKU */
          if (0 == fc_stat(name_buffer, &buf)) {
            if (MAJOR_NEW_OPTION_FILE_NAME != major
-@@ -5931,7 +5968,13 @@ void options_save(option_save_log_callback log_cb)
- 
-   /* insert global worklists */
-   global_worklists_save(sf);
--
-+#ifdef __HAIKU__
-+{
-+  char path[PATH_MAX];
-+  strcpy(path, name);
-+  make_dir(dirname(path));
-+}
-+#endif
-   /* Directory name */
-   sz_strlcpy(dir_name, name);
-   for (i = strlen(dir_name) - 1 ; dir_name[i] != DIR_SEPARATOR_CHAR && i >= 0; i--) {
+               || MINOR_NEW_OPTION_FILE_NAME != minor) {
 diff --git a/server/gamehand.c b/server/gamehand.c
-index 3b8a03e..0276a50 100644
+index 0bedaad..4b586e4 100644
 --- a/server/gamehand.c
 +++ b/server/gamehand.c
-@@ -17,6 +17,12 @@
- 
- #include <stdio.h> /* for remove() */ 
- 
-+#ifdef __HAIKU__
-+  #include <libgen.h>
-+  #include <FindDirectory.h>
-+  #include <fs_info.h>
-+#endif
-+
- /* utility */
- #include "capability.h"
- #include "fcintl.h"
-@@ -1023,7 +1029,17 @@ static const char *get_challenge_fullname(struct connection *pc)
+@@ -1033,7 +1033,12 @@ static const char *get_challenge_fullname(struct connection *pc)
  {
    static char fullname[MAX_LEN_PATH];
  
-+#ifdef __HAIKU__
-+  dev_t bootdev = dev_for_path("/boot");
-+  if (bootdev < 0)
-+    bootdev = 0;
-+  if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+    fullname, sizeof(fullname) - 1) != B_OK)
-+    return NULL;
-+  sz_strlcat(fullname, DIR_SEPARATOR "freeciv" DIR_SEPARATOR);
-+#else
++#ifdef HAIKU
++  interpret_tilde(fullname, sizeof(fullname), "~" DIR_SEPARATOR "config" DIR_SEPARATOR "settings"
++                     DIR_SEPARATOR "freeciv" DIR_SEPARATOR);
++#else  /* HAIKU */
    interpret_tilde(fullname, sizeof(fullname), "~" DIR_SEPARATOR ".freeciv" DIR_SEPARATOR);
-+#endif
++#endif  /* HAIKU */
    sz_strlcat(fullname, get_challenge_filename(pc));
  
    return fullname;
 diff --git a/server/sernet.c b/server/sernet.c
-index 46ec7d5..6cb46ba 100644
+index 46ec7d5..82ef83a 100644
 --- a/server/sernet.c
 +++ b/server/sernet.c
-@@ -44,6 +44,11 @@
- #ifdef FREECIV_HAVE_LIBREADLINE
- #include <readline/history.h>
- #include <readline/readline.h>
-+#ifdef __HAIKU__
-+#include <libgen.h>
-+#include <FindDirectory.h>
-+#include <fs_info.h>
-+#endif
- #endif
- #ifdef HAVE_SYS_SELECT_H
- #include <sys/select.h>
-@@ -507,6 +512,7 @@ enum server_events server_sniff_all_input(void)
- #ifdef FREECIV_HAVE_LIBREADLINE
-   {
-     if (!no_input && !readline_initialized) {
-+#ifndef __HAIKU__
+@@ -510,11 +510,21 @@ enum server_events server_sniff_all_input(void)
        char *home_dir = user_home_dir();
  
        if (home_dir) {
-@@ -530,6 +536,26 @@ enum server_events server_sniff_all_input(void)
-           FC_FREE(fc_dir);
-         }
-       }
-+#else
-+      char path[PATH_MAX];
-+      dev_t bootdev = dev_for_path("/boot");
-+      if (bootdev < 0)
-+        bootdev = 0;
-+      if (find_directory(B_USER_SETTINGS_DIRECTORY, bootdev, false,
-+          path, sizeof(path) - 1) == B_OK) {
-+        if (make_dir(path)) {
-+          strlcat(path, "freeciv/", sizeof(path));
-+          if (make_dir(path)) {
-+            strlcat(path, HISTORY_FILENAME, sizeof(path));
-+            history_file = strdup(path);
-+            if (history_file) {
-+              using_history();
-+              read_history(history_file);
-+            }
-+          }
-+        }
-+      }
-+#endif
++#ifdef HAIKU
++        int fcdl = strlen(home_dir) + 1 + strlen(DIR_SEPARATOR "config" DIR_SEPARATOR "settings"
++		    DIR_SEPARATOR "freeciv") + 1;
++        char *fc_dir = fc_malloc(fcdl);
++
++        if (fc_dir != NULL) {
++          fc_snprintf(fc_dir, fcdl, ("%s/" DIR_SEPARATOR "config" DIR_SEPARATOR "settings" DIR_SEPARATOR
++               "freeciv"), home_dir);
++#else  /* HAIKU */
+         int fcdl = strlen(home_dir) + 1 + strlen(".freeciv") + 1;
+         char *fc_dir = fc_malloc(fcdl);
  
-       rl_initialize();
-       rl_callback_handler_install((char *) "> ",
+         if (fc_dir != NULL) {
+           fc_snprintf(fc_dir, fcdl, "%s/.freeciv", home_dir);
++#endif  /* HAIKU */
+ 
+           if (make_dir(fc_dir)) {
+             history_file
 -- 
-2.24.0
+2.28.0
 
