@@ -1,0 +1,381 @@
+From 11ba96f0ba1e33f065ad6ac4d46a6e5e9b474bcd Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Fri, 12 Mar 2021 15:23:26 +0000
+Subject: GCi 2019 Task - Aqemu - Add platform specific code to get memory size
+
+
+diff --git a/src/Add_Port_Window.cpp b/src/Add_Port_Window.cpp
+index 116122c..b731acc 100644
+--- a/src/Add_Port_Window.cpp
++++ b/src/Add_Port_Window.cpp
+@@ -41,6 +41,10 @@ Add_Port_Window::Add_Port_Window( QWidget *parent )
+ 	#ifdef Q_OS_WIN32
+ 	ui.RB_COM->setEnabled( true );
+ 	#endif
++
++	#ifdef Q_OS_HAIKU
++	ui.RB_stdio->setEnabled(true);
++	#endif
+ 	
+ 	Connect_Slots();
+ }
+diff --git a/src/System_Info.cpp b/src/System_Info.cpp
+index 23d3c8f..e5e94c8 100644
+--- a/src/System_Info.cpp
++++ b/src/System_Info.cpp
+@@ -31,6 +31,10 @@
+ #include "Utils.h"
+ #include "System_Info.h"
+ 
++#ifdef Q_OS_HAIKU
++#include <OS.h>
++#endif
++
+ System_Info::System_Info()
+ {
+ }
+@@ -2118,7 +2122,7 @@ bool System_Info::Delete_From_Used_USB_List( const VM_USB &device )
+ 	return Used_Host_USB.removeOne( device );
+ }
+ 
+-#ifdef Q_OS_LINUX
++#if defined Q_OS_LINUX || defined Q_OS_HAIKU
+ 
+ bool System_Info::Update_Host_USB()
+ {
+@@ -2523,7 +2527,10 @@ bool System_Info::Scan_USB_Proc( QList<VM_USB> &list )
+ 	return true;
+ }
+ 
++#ifndef Q_OS_HAIKU
+ #include <sys/sysinfo.h>
++#endif // Q_OS_HAIKU
++
+ #include <QDir>
+ #include <QFileInfoList>
+ 
+@@ -2615,11 +2622,23 @@ void System_Info::Get_Free_Memory_Size( int &allRAM, int &freeRAM )
+ 	}
+ 	
+ 	// If proc fs not exists
++	
++#ifdef Q_OS_HAIKU
++	system_info sysinfo;
++	get_system_info(&sysinfo);
++
++	uint64 tmp;
++	tmp = (sysinfo.max_pages + sysinfo.ignored_pages) * B_PAGE_SIZE;
++	allRAM = (int)(tmp / 1024.0 / 1024.0);
++
++	freeRAM = (int)(sysinfo.free_memory / 1024.0 / 1024.0);
++#else
+ 	struct sysinfo sysInfo;
+ 	sysinfo( &sysInfo );
+-	
++
+ 	allRAM = (int)(unsigned long)(sysInfo.totalram * sysInfo.mem_unit) / 1024.0 / 1024.0;
+ 	freeRAM  = (int)(unsigned long)((sysInfo.freeram + sysInfo.bufferram) * sysInfo.mem_unit) / 1024.0 / 1024.0;
++#endif // Q_OS_HAIKU
+ }
+ 
+ QStringList System_Info::Get_Host_FDD_List()
+diff --git a/src/System_Info.h b/src/System_Info.h
+index d0e2f35..fe325f7 100644
+--- a/src/System_Info.h
++++ b/src/System_Info.h
+@@ -59,7 +59,7 @@ class System_Info
+ 		static QMap<QString, Available_Devices> Emulator_QEMU_2_0;
+ 
+ 	private:
+-		#ifdef Q_OS_LINUX
++		#if defined Q_OS_LINUX || defined Q_OS_HAIKU
+ 		static bool Scan_USB_Sys( QList<VM_USB> &list );
+ 		static bool Scan_USB_Proc( QList<VM_USB> &list );
+ 		static bool Read_SysFS_File( const QString &path, QString &data );
+diff --git a/src/main.cpp b/src/main.cpp
+index 46c96b6..e259f65 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -361,7 +361,7 @@ int AQEMU_Main::find_data_folders()
+     // Find Data Folder
+     if( settings->value("AQEMU_Data_Folder", "").toString().isEmpty() )
+     {
+-        #ifdef Q_OS_WIN32
++        #ifdef Q_OS_WIN32 || defined Q_OS_HAIKU
+         if( QDir(QDir::currentPath() + "\\os_icons").exists() &&
+             QDir(QDir::currentPath() + "\\os_templates").exists() )
+         {
+-- 
+2.30.0
+
+
+From 7010a95a68a72f29e2d6eb6cc63a82c6c93c91b2 Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Fri, 12 Mar 2021 15:36:10 +0000
+Subject: Add Qt to X11 scancode mapper for VNC
+
+
+diff --git a/src/Embedded_Display/vncview.cpp b/src/Embedded_Display/vncview.cpp
+index 66a2304..4a93503 100644
+--- a/src/Embedded_Display/vncview.cpp
++++ b/src/Embedded_Display/vncview.cpp
+@@ -30,6 +30,116 @@
+ #include <QMouseEvent>
+ #include <QTimer>
+ 
++#ifdef Q_OS_HAIKU
++
++static const uint misc_keys[] =
++{
++    XK_Escape,
++    XK_Tab,
++    XK_Tab, //XK_ISO_Left_Tab
++    XK_BackSpace,
++    XK_Return,
++    XK_KP_Enter,
++    XK_Insert,
++    XK_Delete,
++    XK_Pause,
++    XK_Print,
++    XK_Sys_Req,
++    XK_Clear,
++
++    0, 0, 0, 0, // padding
++
++    XK_Home,
++    XK_End,
++    XK_Left,
++    XK_Up,
++    XK_Right,
++    XK_Down,
++    XK_Page_Up,
++    XK_Page_Down,
++
++    0, 0, 0, 0, 0, 0, 0, 0, // padding
++
++    XK_Shift_L,
++    XK_Control_L,
++    XK_Super_L,
++    XK_Alt_L,
++    XK_Caps_Lock,
++    XK_Num_Lock,
++    XK_Scroll_Lock,
++
++    0, 0, 0, 0, 0, 0, 0, 0, 0, // padding
++
++    XK_F1,
++    XK_F2,
++    XK_F3,
++    XK_F4,
++    XK_F5,
++    XK_F6,
++    XK_F7,
++    XK_F8,
++    XK_F9,
++    XK_F10,
++    XK_F11,
++    XK_F12,
++    XK_F13,
++    XK_F14,
++    XK_F15,
++    XK_F16,
++    XK_F17,
++    XK_F18,
++    XK_F19,
++    XK_F20,
++    XK_F21,
++    XK_F22,
++    XK_F23,
++    XK_F24,
++    XK_F25,
++
++    0
++};
++
++static bool capslock_active = false;
++static Qt::KeyboardModifiers mod_last = 0; 
++
++unsigned int map_qt_to_x11(QKeyEvent *e)
++{
++    int k = e->key();
++    bool pressed = (e->type() == QEvent::KeyPress);
++    Qt::KeyboardModifiers mod = e->modifiers();
++    Qt::KeyboardModifiers modXor = mod ^ mod_last;
++    mod_last = mod;
++
++    if (k >= XK_space && k <= XK_ydiaeresis)
++    {
++        #define XOR(a, b) (!(a && b) && (a || b))
++
++        // check if lowercase ascii
++        if ((k >= XK_A && k <= XK_Z
++        ||   k >= XK_Agrave && k <= XK_Thorn)
++        && !(XOR(mod & Qt::ShiftModifier, capslock_active)))
++            return k + 0x20;
++
++        #undef XOR
++		qDebug() << k;
++        return k;
++    }
++
++    if (k >= 0x01000000 && k <= 0x01000048) {  	
++        return misc_keys[k - 0x01000000];
++    }
++	
++	if (modXor & Qt::ShiftModifier)
++		return XK_Shift_L;
++	if (modXor & Qt::ControlModifier)
++		return XK_Control_L;
++	if (modXor & Qt::AltModifier)
++		return XK_Alt_L;
++
++    return 0;
++}
++#endif
++
+ #ifdef QTONLY
+     #include <QMessageBox>
+     #include <QInputDialog>
+@@ -636,7 +746,11 @@ void VncView::keyEventHandler(QKeyEvent *e)
+         return;
+ 
+ // parts of this code are based on https://github.com/veyon/veyon/blob/master/core/src/VncView.cpp
++#ifdef Q_OS_HAIKU
++	rfbKeySym k = map_qt_to_x11(e);
++#else
+     rfbKeySym k = e->nativeVirtualKey();
++#endif // Q_OS_HAIKU
+ 
+     // we do not handle Key_Backtab separately as the Shift-modifier
+     // is already enabled
+-- 
+2.30.0
+
+
+From 5cf2bb057ce3c2090fcfcd067657de64bb50a182 Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Fri, 12 Mar 2021 15:41:25 +0000
+Subject: Use application dir as data dir
+
+
+diff --git a/src/main.cpp b/src/main.cpp
+index e259f65..776dd1c 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -361,7 +361,7 @@ int AQEMU_Main::find_data_folders()
+     // Find Data Folder
+     if( settings->value("AQEMU_Data_Folder", "").toString().isEmpty() )
+     {
+-        #ifdef Q_OS_WIN32 || defined Q_OS_HAIKU
++        #ifdef Q_OS_WIN32
+         if( QDir(QDir::currentPath() + "\\os_icons").exists() &&
+             QDir(QDir::currentPath() + "\\os_templates").exists() )
+         {
+@@ -378,6 +378,9 @@ int AQEMU_Main::find_data_folders()
+         dataDirs << "/usr/share/aqemu/"
+                  << "/usr/share/apps/aqemu/"
+                  << "/usr/local/share/aqemu/";
++#ifdef Q_OS_HAIKU
++		dataDirs << QCoreApplication::applicationDirPath() + "/";
++#endif // Q_OS_HAIKU
+ 
+         // Find data dir
+         for( int dx = 0; dx < dataDirs.count(); ++dx )
+-- 
+2.30.0
+
+
+From 2b99885f509cd262127858cd5843068a0097d98c Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Fri, 12 Mar 2021 15:51:16 +0000
+Subject: Fix widget name conflict
+
+
+diff --git a/src/Advanced_Settings_Window.ui b/src/Advanced_Settings_Window.ui
+index c3c0faf..0df4697 100644
+--- a/src/Advanced_Settings_Window.ui
++++ b/src/Advanced_Settings_Window.ui
+@@ -2177,7 +2177,7 @@ with embedded display</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_26">
+             <item>
+-             <widget class="QWidget" name="widget_2" native="true">
++             <widget class="QWidget" name="widget_1" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_19">
+                <property name="leftMargin">
+                 <number>10</number>
+@@ -2220,7 +2220,7 @@ Supports only USB &amp;1.1 controller emulation.</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_25">
+             <item>
+-             <widget class="QWidget" name="widget" native="true">
++             <widget class="QWidget" name="widget2" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_16">
+                <property name="leftMargin">
+                 <number>10</number>
+diff --git a/src/SPICE_Settings_Widget.ui b/src/SPICE_Settings_Widget.ui
+index 3cf1a6e..bb1e339 100644
+--- a/src/SPICE_Settings_Widget.ui
++++ b/src/SPICE_Settings_Widget.ui
+@@ -95,7 +95,7 @@
+            <number>0</number>
+           </property>
+           <item>
+-           <widget class="QGroupBox" name="groupBox">
++           <widget class="QGroupBox" name="groupBox_0">
+             <property name="title">
+              <string>Network</string>
+             </property>
+@@ -209,7 +209,7 @@
+            </widget>
+           </item>
+           <item>
+-           <widget class="QGroupBox" name="groupBox">
++           <widget class="QGroupBox" name="groupBox_1">
+             <property name="title">
+              <string>Image, Video and Audio</string>
+             </property>
+@@ -387,7 +387,7 @@
+            </widget>
+           </item>
+           <item>
+-           <widget class="QGroupBox" name="groupBox">
++           <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Security</string>
+             </property>
+-- 
+2.30.0
+
+
+From 9701388850cfed006600688c5eb86e778098c993 Mon Sep 17 00:00:00 2001
+From: begasus <begasus@gmail.com>
+Date: Fri, 12 Mar 2021 19:06:38 +0000
+Subject: fix build
+
+
+diff --git a/src/Embedded_Display/vncclientthread.cpp b/src/Embedded_Display/vncclientthread.cpp
+index 7f172ec..1634dcc 100644
+--- a/src/Embedded_Display/vncclientthread.cpp
++++ b/src/Embedded_Display/vncclientthread.cpp
+@@ -598,7 +598,7 @@ void VncClientThread::clientSetKeepalive()
+     }
+ 
+     optval = m_keepalive.intervalSeconds;
+-    if (setsockopt(cl->sock, IPPROTO_TCP, TCP_KEEPIDLE, &optval, optlen) < 0) {
++/*    if (setsockopt(cl->sock, IPPROTO_TCP, TCP_KEEPIDLE, &optval, optlen) < 0) {
+         qCritical(KRDC) << "setsockopt(TCP_KEEPIDLE)" << strerror(errno);
+         return;
+     }
+@@ -614,7 +614,7 @@ void VncClientThread::clientSetKeepalive()
+         qCritical(KRDC) << "setsockopt(TCP_KEEPCNT)" << strerror(errno);
+         return;
+     }
+-    m_keepalive.set = true;
++*/    m_keepalive.set = true;
+     qCDebug(KRDC) << "TCP keepalive set";
+ }
+ 
+-- 
+2.30.0
+
