@@ -1,0 +1,118 @@
+SUMMARY="Braille display driver for Linux/Unix"
+DESCRIPTION="BRLTTY - A background process providing access to the console screen (when in text \
+mode) for a blind person using a refreshable braille display."
+HOMEPAGE="https://brltty.app"
+COPYRIGHT="1995-2022 by The BRLTTY Developers"
+LICENSE="GNU LGPL v2.1"
+REVISION="1"
+SOURCE_URI="$HOMEPAGE/archive/brltty-$portVersion.tar.xz"
+CHECKSUM_SHA256="2f173535291ba39b5a9fc8d80c349234333d92042d95d6dd88796c98a02f316b"
+
+ARCHITECTURES="?all !x86_gcc2"
+SECONDARY_ARCHITECTURES="?x86"
+
+GLOBAL_WRITABLE_FILES="settings/brltty.conf keep-old"
+
+commandBinDir=$binDir
+commandSuffix=$secondaryArchSuffix
+if [ "$targetArchitecture" = x86_gcc2 ]; then
+	commandSuffix=
+	commandBinDir=$prefix/bin
+fi
+
+PROVIDES="
+	brltty$secondaryArchSuffix = $portVersion
+	cmd:brltty_atb$commandSuffix
+	cmd:brltty_cldr$commandSuffix
+	cmd:brltty_config.sh$commandSuffix
+	cmd:brltty_ctb$commandSuffix
+	cmd:brltty_genkey$commandSuffix
+	cmd:brltty_hid$commandSuffix
+	cmd:brltty_ktb$commandSuffix
+	cmd:brltty_lscmds$commandSuffix
+	cmd:brltty_lsinc$commandSuffix
+	cmd:brltty_mkuser$commandSuffix
+	cmd:brltty_morse$commandSuffix
+	cmd:brltty_prologue.bash$commandSuffix
+	cmd:brltty_prologue.lua$commandSuffix
+	cmd:brltty_prologue.sh$commandSuffix
+	cmd:brltty_prologue.tcl$commandSuffix
+	cmd:brltty_setcaps$commandSuffix
+	cmd:brltty_trtxt$commandSuffix
+	cmd:brltty_ttb$commandSuffix
+	cmd:brltty_ttysize$commandSuffix
+	cmd:brltty_tune$commandSuffix
+	cmd:brltty$commandSuffix
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libexpat$secondaryArchSuffix
+	lib:libiconv$secondaryArchSuffix
+	lib:libicudata$secondaryArchSuffix
+	lib:libicuuc$secondaryArchSuffix
+	lib:libintl$secondaryArchSuffix
+	lib:liblouis$secondaryArchSuffix
+	lib:libncurses$secondaryArchSuffix
+	lib:libpcre2_32$secondaryArchSuffix
+	"
+
+PROVIDES_devel="
+	brltty${secondaryArchSuffix}_devel = $portVersion
+	devel:brltty$secondaryArchSuffix = $portVersion
+	"
+REQUIRES_devel="
+	brltty$secondaryArchSuffix == $portVersion base
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libexpat$secondaryArchSuffix
+	devel:libiconv$secondaryArchSuffix
+	devel:libicudata$secondaryArchSuffix >= 70
+	devel:libicuuc$secondaryArchSuffix >= 70
+	devel:libintl$secondaryArchSuffix
+	devel:liblouis$secondaryArchSuffix
+	devel:liblua$secondaryArchSuffix >= 5.4
+	devel:liblouis$secondaryArchSuffix
+	devel:libncurses$secondaryArchSuffix
+	devel:libpcre2_32$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:autoconf
+	cmd:awk
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	cmd:pkg_config$secondaryArchSuffix
+	"
+
+BUILD()
+{
+	autoupdate
+	autoconf
+	runConfigure --omit-dirs binDir ./configure \
+		--bindir=$commandBinDir \
+		--disable-api \
+		--with-tables-directory=$dataDir/tables/brltty \
+		--with-writable-directory="$(finddir B_USER_NONPACKAGED_DATA_DIRECTORY)"
+	make $jobArgs
+}
+
+INSTALL()
+{
+	make install
+
+	# install default config file
+	mkdir -p $settingsDir
+	cp -f Documents/brltty.conf $settingsDir
+
+#	prepareInstalledDevelLib libbrltty
+	fixPkgconfig
+
+	packageEntries devel \
+		$developDir
+}
+
+TEST()
+{
+	make check
+}

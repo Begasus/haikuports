@@ -1,0 +1,120 @@
+SUMMARY="Open-source braille translator and back-translator"
+DESCRIPTION="Liblouis is an open-source braille translator and back-translator named in honor of \
+Louis Braille. It features support for computer and literary braille, supports contracted and \
+uncontracted translation for many languages and has support for hyphenation. New languages can \
+easily be added through tables that support a rule- or dictionary based approach. Tools for \
+testing and debugging tables are also included. Liblouis also supports math braille (Nemeth and \
+Marburg).
+
+Liblouis has features to support screen-reading programs. This has led to its use in two \
+open-source screenreaders, NVDA and Orca. It is also used in some commercial assistive technology \
+applications for example by ViewPlus.
+
+Liblouis is based on the translation routines in the BRLTTY screenreader for Linux. It has, \
+however, gone far beyond these routines. In Linux and Mac OSX it is a shared library, and in \
+Windows it is a DLL."
+HOMEPAGE="https://github.com/liblouis/liblouis"
+COPYRIGHT="2022 ViewPlus Technologies, Inc. and JJB Software, Inc.
+	2022 Swiss Library for the Blind, Visually Impaired and Print Disabled
+	2022 Bert Frees"
+LICENSE="GNU GPL v3
+	GNU LGPL v2.1"
+REVISION="1"
+SOURCE_URI="$HOMEPAGE/releases/download/v$portVersion/liblouis-$portVersion.tar.gz"
+CHECKSUM_SHA256="ca9446c57fbce16a856f99a1abf69ae2e8671d4d8ab44cfb353bb651a820b73e"
+
+ARCHITECTURES="all !x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+commandBinDir=$binDir
+commandSuffix=$secondaryArchSuffix
+if [ "$targetArchitecture" = x86_gcc2 ]; then
+	commandSuffix=
+	commandBinDir=$prefix/bin
+fi
+
+libVersion="20.0.14"
+libVersionCompat="$libVersion compat >= ${libVersion%%.*}"
+
+PROVIDES="
+	liblouis$secondaryArchSuffix = $portVersion
+	lib:liblouis$secondaryArchSuffix = $libVersionCompat
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	"
+
+PROVIDES_devel="
+	liblouis${secondaryArchSuffix}_devel = $portVersion
+	devel:liblouis$secondaryArchSuffix = $libVersionCompat
+	"
+REQUIRES_devel="
+	liblouis$secondaryArchSuffix == $portVersion base
+	"
+
+PROVIDES_tools="
+	liblouis${secondaryArchSuffix}_tools = $portVersion
+	cmd:lou_allround$commandSuffix
+	cmd:lou_checkhyphens$commandSuffix
+	cmd:lou_checktable$commandSuffix
+	cmd:lou_debug$commandSuffix
+	cmd:lou_maketable$commandSuffix
+	cmd:lou_maketable.d$commandSuffix
+	cmd:lou_tableinfo$commandSuffix
+	cmd:lou_trace$commandSuffix
+	cmd:lou_translate$commandSuffix
+	"
+REQUIRES_tools="
+	liblouis$secondaryArchSuffix == $portVersion base
+	haiku$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	"
+BUILD_PREREQUIRES="
+	cmd:awk
+	cmd:help2man
+	cmd:make
+	cmd:gcc$secondaryArchSuffix
+	"
+
+defineDebugInfoPackage liblouis$secondaryArchSuffix \
+	$libDir/liblouis.so.$libVersion
+
+PATCH()
+{
+	sed 's/share/data/g' -i liblouis.pc.in
+}
+
+BUILD()
+{
+	runConfigure --omit-dirs binDir ./configure \
+		--bindir=$commandBinDir \
+		--disable-static \
+		--enable-ucs4
+	make $jobArgs
+}
+
+INSTALL()
+{
+	make install
+
+	# remove libtool file
+	rm -f $libDir/liblouis.la
+
+	prepareInstalledDevelLib liblouis
+	fixPkgconfig
+
+	packageEntries devel \
+		$developDir
+
+	packageEntries tools \
+		$commandBinDir \
+		$manDir
+}
+
+TEST()
+{
+	make check
+}
