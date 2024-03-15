@@ -1,0 +1,82 @@
+SUMMARY="A turn-based strategy game"
+DESCRIPTION="Hedgewars, it's a blast!
+This is the funniest and most addictive game you'll ever play—hilarious fun that you can enjoy \
+anywhere, anytime. Hedgewars is a turn-based strategy game but the real buzz is from watching the \
+devastation caused by those pesky hedgehogs with those fantastic weapons—sneaky little blighters \
+with a bad attitude!"
+HOMEPAGE="https://www.hedgewars.org"
+COPYRIGHT="TODO"
+LICENSE="GNU GPL v2"
+REVISION="1"
+SOURCE_URI="https://www.hedgewars.org/download/releases/hedgewars-src-${portVersion}.tar.bz2"
+SOURCE_DIR="hedgewars-src-$portVersion"
+CHECKSUM_SHA256="201fe5e45bd8ca5b3d81b18ec06bd6bbc9fa7c2c63bf019005e2f80be5bcf212"
+PATCHES="hedgewars-$portVersion.patchset"
+
+ARCHITECTURES="?all ?x86_64"
+SECONDARY_ARCHITECTURES="?x86"
+
+PROVIDES="
+	hedgewars$secondaryArchSuffix = $portVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:liblua$secondaryArchSuffix
+	lib:libphysfs$secondaryArchSuffix
+	lib:libSDL2_2.0$secondaryArchSuffix
+	lib:libSDL2_image_2.0$secondaryArchSuffix
+	lib:libSDL2_net_2.0$secondaryArchSuffix
+	lib:libSDL2_mixer_2.0$secondaryArchSuffix
+	lib:libSDL2_ttf_2.0$secondaryArchSuffix
+	lib:libQt5Core$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+#	devel:libavcodec$secondaryArchSuffix >= 60
+#	devel:libavformat$secondaryArchSuffix >= 60
+#	devel:libavutil$secondaryArchSuffix >= 58
+	devel:liblua$secondaryArchSuffix >= 5.3
+#	devel:libGL$secondaryArchSuffix
+#	devel:libGLU$secondaryArchSuffix
+	devel:libphysfs$secondaryArchSuffix
+	devel:libSDL2_2.0$secondaryArchSuffix
+	devel:libSDL2_image_2.0$secondaryArchSuffix
+	devel:libSDL2_net_2.0$secondaryArchSuffix
+	devel:libSDL2_mixer_2.0$secondaryArchSuffix
+	devel:libSDL2_ttf_2.0$secondaryArchSuffix
+	devel:libssp_nonshared$secondaryArchSuffix
+	devel:libQt5Core$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:cmake
+	cmd:fpc
+	cmd:gcc$secondaryArchSuffix
+	cmd:linguist$secondaryArchSuffix >= 5
+	cmd:make
+	cmd:pkg_config$secondaryArchSuffix
+	"
+
+BUILD()
+{
+	export FPCDIR="`finddir B_SYSTEM_DIRECTORY`/$relativeLibDir/fpc/3.2.2"
+
+	cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=$prefix \
+		-DDATA_INSTALL_DIR=$dataDir/hedgewars \
+		-DLUA_LIBRARY="`finddir B_SYSTEM_DIRECTORY`/$relativeLibDir/liblua.so.5.3" \
+		-DLUA_INCLUDE_DIR="`finddir B_SYSTEM_DIRECTORY`/$relativeIncludeDir/lua53" \
+		-DNOSERVER=ON \
+		-DNOVIDEOREC=ON \
+		-DBUILD_SHARED_LIBS=OFF \
+		-DFONTS_DIRS=$dataDir/fonts/ttfonts \
+		-DLUA_SYSTEM=ON \
+		-Wno-dev
+
+	make -Cbuild $jobArgs
+}
+
+INSTALL()
+{
+	make -Cbuild install
+}
