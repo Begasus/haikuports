@@ -1,0 +1,22 @@
+From cfbeac46875f875e7fa6cf91e63ef7b58bf93f19 Mon Sep 17 00:00:00 2001
+From: Schrijvers Luc <begasus@gmail.com>
+Date: Sat, 25 May 2024 15:35:33 +0200
+Subject: Disable HAVE_DBUSADDONS
+
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index a51d897..a8e6efb 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -524,7 +524,7 @@ else()
+     target_link_libraries(tokodon PRIVATE Qt::Widgets)
+ endif()
+ 
+-if (TARGET KF6::DBusAddons)
++if (TARGET KF6::DBusAddons AND NOT HAIKU)
+     target_link_libraries(tokodon PRIVATE KF6::DBusAddons KF6::WindowSystem)
+     target_compile_definitions(tokodon PRIVATE -DHAVE_KDBUSADDONS)
+ endif ()
+-- 
+2.43.2
+
