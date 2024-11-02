@@ -1,0 +1,98 @@
+SUMMARY="Versatile and fast remote procedure call library"
+DESCRIPTION="NymphRPC is a compact, C++-based Remote Procedure Call (RPC) library. Please see the \
+example server and client implementations in the test folder to get an idea of how NymphRPC is \
+integrated into an application.
+The basic procedure is to define the RPC methods and client-side callbacks in the server, which \
+the client will synchronise with when it connects to the server. There is no Domain-Specific \
+Language (DSL) or auto-generated code."
+HOMEPAGE="https://github.com/MayaPosch/NymphRPC/"
+COPYRIGHT="2017, Maya Posch"
+LICENSE="BSD (3-clause)"
+REVISION="1"
+srcGitRev="b5d15bb26709f849861c0e52f7b521031cb67abb"
+SOURCE_URI="$HOMEPAGE/archive/$srcGitRev.tar.gz"
+CHECKSUM_SHA256="2c3183d2b69c49a4cbeaf2681e7c2115eee4d90398305a4ce50be93d2ca758cc"
+SOURCE_DIR="NymphRPC-$srcGitRev"
+PATCHES="nymphrpc-$portVersion.patchset"
+
+ARCHITECTURES="all !x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+libVersion="0.1"
+
+PROVIDES="
+	nymphrpc$secondaryArchSuffix = $portVersion
+	lib:libnymphrpc$secondaryArchSuffix = $libVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libPocoFoundation$secondaryArchSuffix
+	lib:libPocoJSON$secondaryArchSuffix
+	lib:libPocoUtil$secondaryArchSuffix
+	lib:libPocoNet$secondaryArchSuffix
+	"
+
+PROVIDES_devel="
+	nymphrpc${secondaryArchSuffix}_devel = $portVersion
+	devel:libnymphrpc$secondaryArchSuffix = $libVersion
+	"
+REQUIRES_devel="
+	nymphrpc$secondaryArchSuffix == $portVersion base
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libPocoFoundation$secondaryArchSuffix
+	devel:libPocoJSON$secondaryArchSuffix
+	devel:libPocoUtil$secondaryArchSuffix
+	devel:libPocoNet$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:g++$secondaryArchSuffix
+	cmd:make
+	"
+
+defineDebugInfoPackage nymphrpc$secondaryArchSuffix \
+	"$libDir"/libnymphrpc.so.$libVersion
+
+BUILD()
+{
+	make $jobArgs
+}
+
+
+INSTALL()
+{
+	make install PREFIX=$prefix \
+		LIBDIR=$libDir \
+		INCLUDEDIR=$includeDir
+
+	# remove static library
+	rm -f $libDir/libnymphrpc.a
+
+# Add pkgconfig file
+mkdir -p $developLibDir/pkgconfig
+cat > $developLibDir/pkgconfig/nymphrpc.pc << EOF
+bindir=$prefix/bin
+exec_prefix=$prefix
+libdir=$libDir
+includedir=$includeDir
+
+Name: nymphrpc
+Description: $SUMMARY
+Version: $portVersion
+Libs: -L$developLibDir -lnymphrpc
+Cflags: -I$includeDir
+EOF
+
+	prepareInstalledDevelLib \
+		libnymphrpc
+
+	packageEntries devel \
+		"$developDir"
+}
+
+TEST()
+{
+	make test
+}
