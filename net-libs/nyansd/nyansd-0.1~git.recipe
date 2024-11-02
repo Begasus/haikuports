@@ -1,0 +1,105 @@
+SUMMARY="Service discovery protocol and reference implementation"
+DESCRIPTION="NyanSD (Nyanko Service Discovery) is a simple yet versatile protocol aimed at \
+providing everything from small network-based applications to entire operating systems with the \
+ability to perform network-based service discovery. While similar to DNS-SD and mDNS, it \
+distinguishes itself by being exceedingly simple to implement.
+
+Both a daemon and client utility are available, as well as a reference client and server \
+implementation."
+HOMEPAGE="https://github.com/MayaPosch/NyanSD/"
+COPYRIGHT="2020 Maya Posch"
+LICENSE="BSD (3-clause)"
+REVISION="1"
+srcGitRev="b857ceef52c66f33b83c1554d8d15a8344c4565a"
+SOURCE_URI="$HOMEPAGE/archive/$srcGitRev.tar.gz"
+CHECKSUM_SHA256="0e429f988b7cdac0bfe3b2b0d6c5530e3de09aadf88cf34744de79835bc9fc8d"
+SOURCE_DIR="NyanSD-$srcGitRev"
+PATCHES="nyansd-$portVersion.patchset"
+
+ARCHITECTURES="all !x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+libVersion="0.1"
+
+PROVIDES="
+	nyansd$secondaryArchSuffix = $portVersion
+	cmd:nyansd_client
+	cmd:nyansd_server
+	lib:libnyansd$secondaryArchSuffix = $libVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libPocoFoundation$secondaryArchSuffix
+	lib:libPocoUtil$secondaryArchSuffix
+	lib:libPocoNet$secondaryArchSuffix
+	"
+
+PROVIDES_devel="
+	nyansd${secondaryArchSuffix}_devel = $portVersion
+	devel:libnyansd$secondaryArchSuffix = $libVersion
+	"
+REQUIRES_devel="
+	nyansd$secondaryArchSuffix == $portVersion base
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libPocoFoundation$secondaryArchSuffix
+	devel:libPocoUtil$secondaryArchSuffix
+	devel:libPocoNet$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:g++$secondaryArchSuffix
+	cmd:make
+	"
+
+defineDebugInfoPackage nyansd$secondaryArchSuffix \
+	$prefix/bin/nyansd_client \
+	$prefix/bin/nyansd_server \
+	"$libDir"/libnyansd.so.$libVersion
+
+BUILD()
+{
+	# no $jobArgs here, make sure the library is build first!
+	make
+}
+
+INSTALL()
+{
+	make install PREFIX=$prefix \
+		LIBDIR=$libDir \
+		INCLUDEDIR=$includeDir
+
+	mkdir -p $prefix/bin
+	cp client/bin/nyansd_client $prefix/bin
+	cp server/bin/nyansd_server $prefix/bin
+
+	# remove static library
+	rm -f $libDir/libnyansd.a
+
+# Add pkgconfig file
+mkdir -p $developLibDir/pkgconfig
+cat > $developLibDir/pkgconfig/nyansd.pc << EOF
+bindir=$prefix/bin
+exec_prefix=$prefix
+libdir=$libDir
+includedir=$includeDir
+
+Name: NyanSD
+Description: $SUMMARY
+Version: $portVersion
+Libs: -L$developLibDir -lnyansd
+Cflags: -I$includeDir
+EOF
+
+	prepareInstalledDevelLib \
+		libnyansd
+
+	packageEntries devel \
+		"$developDir"
+}
+
+TEST()
+{
+	make check
+}

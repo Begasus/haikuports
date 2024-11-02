@@ -1,0 +1,41 @@
+From ac4863a3802a773f65879824cd1983b2773dbecd Mon Sep 17 00:00:00 2001
+From: Begasus <begasus@gmail.com>
+Date: Sat, 2 Nov 2024 10:16:21 +0100
+Subject: Haiku fixes
+
+
+diff --git a/Makefile b/Makefile
+index b267c74..284a348 100644
+--- a/Makefile
++++ b/Makefile
+@@ -114,18 +114,20 @@ clean-server:
+ 	$(MAKE) -C ./server clean
+ 
+ PREFIX ?= /usr
++LIBDIR ?= $(PREFIX)/lib
++INCLUDEDIR ?= $(PREFIX)/include
+ 
+ .PHONY: install client server daemon browse
+ 
+ install:
+-	install -d $(DESTDIR)$(PREFIX)/lib/
+-	install -m 644 lib/$(OUTPUT).a $(DESTDIR)$(PREFIX)/lib/
+-	install -m 644 lib/$(OUTPUT).so.$(VERSION) $(DESTDIR)$(PREFIX)/lib/
+-	install -d $(DESTDIR)$(PREFIX)/include/
+-	install -m 644 src/*.h $(DESTDIR)$(PREFIX)/include/
++	install -d $(DESTDIR)$(LIBDIR)
++	install -m 644 lib/$(OUTPUT).a $(DESTDIR)$(LIBDIR)
++	install -m 644 lib/$(OUTPUT).so.$(VERSION) $(DESTDIR)$(LIBDIR)
++	install -d $(DESTDIR)$(INCLUDEDIR)
++	install -m 644 src/*.h $(DESTDIR)$(INCLUDEDIR)
+ 	cd $(DESTDIR)$(PREFIX)/lib && \
+ 		if [ -f $(OUTPUT).so ]; then \
+ 			rm $(OUTPUT).so; \
+ 		fi && \
+ 		ln -s $(OUTPUT).so.$(VERSION) $(OUTPUT).so
+-	
+\ No newline at end of file
++	
+-- 
+2.45.2
+
