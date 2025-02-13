@@ -1,0 +1,106 @@
+From 2d3bc5fc79ec36899c0205e620e9bc68a6dc53f8 Mon Sep 17 00:00:00 2001
+From: Begasus <begasus@gmail.com>
+Date: Thu, 13 Feb 2025 06:59:13 +0100
+Subject: Fix detection for some headers
+
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9be7e27..ce39619 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -252,7 +252,7 @@ set( CMAKE_CXX_VISIBILITY_PRESET "hidden" )
+ set( CMAKE_VISIBILITY_INLINES_HIDDEN ON )
+ 
+ # Global setting: build everything position independent
+-set( CMAKE_POSITION_INDEPENDENT_CODE ON )
++set( CMAKE_POSITION_INDEPENDENT_CODE OFF )
+ 
+ # Global setting: Use C++17
+ set(CMAKE_CXX_STANDARD 17)
+@@ -998,7 +998,7 @@ endif()
+ # See line 49 of cmake/FindwxWidgets.cmake
+ set( wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --static=no )
+ 
+-find_package( wxWidgets ${wxWidgets_REQ_VERSION} COMPONENTS gl aui adv html core net base propgrid xml stc richtext REQUIRED )
++find_package( wxWidgets ${wxWidgets_REQ_VERSION} COMPONENTS html REQUIRED )
+ 
+ # Include wxWidgets macros.
+ include( ${wxWidgets_USE_FILE} )
+diff --git a/cmake/FindCairo.cmake b/cmake/FindCairo.cmake
+index c5146f7..81c9bfb 100644
+--- a/cmake/FindCairo.cmake
++++ b/cmake/FindCairo.cmake
+@@ -51,6 +51,7 @@ FIND_PATH(CAIRO_INCLUDE_DIR
+   PATH_SUFFIXES
+     include
+     "include/cairo"
++    "develop/headers/cairo"
+ )
+ 
+ IF(NOT PKGCONFIG_FOUND AND WIN32 AND NOT CYGWIN)
+diff --git a/cmake/FindOCC.cmake b/cmake/FindOCC.cmake
+index bcd9968..50161f3 100644
+--- a/cmake/FindOCC.cmake
++++ b/cmake/FindOCC.cmake
+@@ -131,6 +131,7 @@ else(WIN32)
+     /usr/local/include/opencascade
+     /opt/opencascade/include
+     /opt/opencascade/inc
++    /system/develop/headers/opencascade
+   )
+   FIND_LIBRARY(OCC_LIBRARY TKernel
+     HINTS
+@@ -140,6 +141,7 @@ else(WIN32)
+     /usr/local/opencascade
+     /opt/opencascade
+     /opt/opencascade/lin64/gcc
++    /system
+     PATH_SUFFIXES lib
+   )
+ endif(WIN32)
+diff --git a/cmake/FindPixman.cmake b/cmake/FindPixman.cmake
+index 128ca82..bf94085 100644
+--- a/cmake/FindPixman.cmake
++++ b/cmake/FindPixman.cmake
+@@ -52,6 +52,7 @@ FIND_PATH(PIXMAN_INCLUDE_DIR
+   PATH_SUFFIXES
+     include
+     "include/pixman-1"
++    "develop/headers/pixman-1"
+ )
+ 
+ IF(NOT PKGCONFIG_FOUND AND WIN32 AND NOT CYGWIN)
+-- 
+2.45.2
+
+
+From 112f4c38957f42ce7059f06624d93786c0e7fb93 Mon Sep 17 00:00:00 2001
+From: Begasus <begasus@gmail.com>
+Date: Thu, 13 Feb 2025 07:24:16 +0100
+Subject: Fix build for libcontext
+
+
+diff --git a/thirdparty/libcontext/libcontext.h b/thirdparty/libcontext/libcontext.h
+index 20a1f2a..918ab8e 100644
+--- a/thirdparty/libcontext/libcontext.h
++++ b/thirdparty/libcontext/libcontext.h
+@@ -86,6 +86,16 @@
+         #define LIBCONTEXT_CALL_CONVENTION
+     #endif
+     #endif
++
++    #if defined(__HAIKU__)
++    #if defined(__i386__)
++        #define LIBCONTEXT_PLATFORM_haiku_i386
++        #define LIBCONTEXT_CALL_CONVENTION
++    #elif defined(__x86_64__)
++        #define LIBCONTEXT_PLATFORM_haiku_x86_64
++        #define LIBCONTEXT_CALL_CONVENTION
++    #endif
++    #endif
+ #elif defined (_MSC_VER )
+ 
+ #define LIBCONTEXT_CALL_CONVENTION __cdecl
+-- 
+2.45.2
+

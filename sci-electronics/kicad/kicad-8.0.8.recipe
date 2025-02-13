@@ -1,0 +1,85 @@
+SUMMARY="Electronic Schematic and PCB design tools"
+DESCRIPTION="KiCad is an open source software suite for Electronic Design Automation (EDA). The \
+programs handle Schematic Capture, and PCB Layout with Gerber and IPC-2581 output. The suite \
+runs on Windows, Linux and macOS and is licensed under GNU GPL v3."
+HOMEPAGE="https://www.kicad.org/"
+COPYRIGHT="1992-2015 Jean-Pierre Charras
+	1992-2024 KiCad Developers Team"
+LICENSE="BSD (3-clause)
+	Boost v1.0
+	GNU GPL v2
+	GNU GPL v3"
+REVISION="1"
+SOURCE_URI="https://gitlab.com/kicad/code/kicad/-/archive/$portVersion/kicad-$portVersion.tar.bz2"
+CHECKSUM_SHA256="d75d6c11eec6694504eb8aa7049e46647129021373c775999a9a87f5a4c2bc49"
+PATCHES="kicad-$portVersion.patchset"
+ADDITIONAL_FILES="kicad.rdef.in"
+
+ARCHITECTURES="?all !x86_gcc2"
+SECONDARY_ARCHITECTURES="?x86"
+
+PROVIDES="
+	kicad$secondaryArchSuffix = $portVersion
+	cmd:kicad$secondaryArchSuffix = $portVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	glm
+	wxgtk${secondaryArchSuffix}_devel
+	devel:libboost_locale$secondaryArchSuffix >= 1.83.0
+	devel:libcurl$secondaryArchSuffix
+	devel:libcairo$secondaryArchSuffix
+	devel:libEGL$secondaryArchSuffix
+	devel:libfontconfig$secondaryArchSuffix
+	devel:libfreetype$secondaryArchSuffix
+	devel:libgit2$secondaryArchSuffix
+	devel:libglew$secondaryArchSuffix
+	devel:libgtk_3$secondaryArchSuffix
+	devel:libngspice$secondaryArchSuffix
+	devel:libodbc$secondaryArchSuffix
+	devel:libpixman_1$secondaryArchSuffix
+	devel:libpython3.10$secondaryArchSuffix
+	devel:libsecret_1$secondaryArchSuffix
+	devel:libTKernel$secondaryArchSuffix
+	devel:libz$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	pybind11_python310
+	cmd:cmake
+	cmd:dot
+	cmd:doxygen
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	cmd:msgfmt$secondaryArchSuffix
+	cmd:msgmerge$secondaryArchSuffix
+	cmd:pkg_config$secondaryArchSuffix
+	cmd:python3
+	cmd:wxrc$secondaryArchSuffix
+	cmd:swig
+	"
+
+BUILD()
+{
+	cmake -B build -S . \
+		-DCMAKE_BUILD_TYPE=Release \
+		$cmakeDirArgs \
+		-Wno-dev \
+		-DKICAD_SCRIPTING_WXPYTHON:BOOL=OFF \
+		-DKICAD_BUILD_QA_TESTS:BOOL=OFF
+
+	make -C build $jobArgs
+}
+
+INSTALL()
+{
+	make -C build install
+}
+
+TEST()
+{
+	ctest --test-dir build --output-on-failure
+}
