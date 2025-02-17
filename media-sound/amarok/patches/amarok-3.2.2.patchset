@@ -1,0 +1,39 @@
+From 12ab3a03a75f06950beffc7933962f872c51403d Mon Sep 17 00:00:00 2001
+From: Begasus <begasus@gmail.com>
+Date: Tue, 4 Mar 2025 10:50:27 +0100
+Subject: Disable KDBusService
+
+
+diff --git a/src/main.cpp b/src/main.cpp
+index b45510d..c8d0b35 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -21,7 +21,9 @@
+ 
+ #include <KAboutData>
+ #include <KCrash>
++#ifndef Q_OS_HAIKU
+ #include <KDBusService>
++#endif
+ #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <Kdelibs4ConfigMigrator>
+ #include <Kdelibs4Migration>
+@@ -336,6 +338,7 @@ int main( int argc, char *argv[] )
+     parser.process(app);
+     aboutData.processCommandLine(&parser);
+ 
++#ifndef Q_OS_HAIKU
+     KDBusService::StartupOptions startOptions = parser.isSet( QStringLiteral("multipleinstances") ) ? KDBusService::Multiple
+                                                                                     : KDBusService::Unique ;
+     // register  the app  to dbus
+@@ -371,6 +374,7 @@ int main( int argc, char *argv[] )
+             fprintf( stderr, "Amarok is already running!\n" );
+         return 0;
+     }
++#endif
+ 
+     // Rewrite default SIGINT and SIGTERM handlers
+     // to make amarok save current playlists during forced
+-- 
+2.48.1
+
