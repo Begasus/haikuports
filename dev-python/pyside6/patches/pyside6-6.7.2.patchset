@@ -1,0 +1,22 @@
+From 6c26bc33366c5324949c55178dd4bc2cbd6caff9 Mon Sep 17 00:00:00 2001
+From: Luc Schrijvers <begasus@gmail.com>
+Date: Wed, 16 Apr 2025 15:09:57 +0200
+Subject: Fix?
+
+
+diff --git a/sources/pyside6/qtexampleicons/module.c b/sources/pyside6/qtexampleicons/module.c
+index b728daf..45911f4 100644
+--- a/sources/pyside6/qtexampleicons/module.c
++++ b/sources/pyside6/qtexampleicons/module.c
+@@ -1,7 +1,7 @@
+ // Copyright (C) 2023 The Qt Company Ltd.
+ // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+ 
+-#include <Python.h>
++#include <python3.10/Python.h>
+ 
+ #if defined _WIN32
+ #  define MODULE_EXPORT __declspec(dllexport)
+-- 
+2.48.1
+
