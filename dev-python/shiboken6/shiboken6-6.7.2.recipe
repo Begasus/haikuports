@@ -1,0 +1,105 @@
+SUMMARY="CPython bindings generator for C++ libraries"
+DESCRIPTION="Shiboken is a fundamental piece on the Qt for Python project that serves two purposes:
+
+* Generator: Extract information from C or C++ headers and generate CPython code that allow to \
+bring C or C++ projects to Python. This process uses a library called ApiExtractor which \
+internally uses Clang.
+* Module: An utility Python module that exposed new Python types, functions to handle pointers, \
+among other things, that is written in CPython and can use independently of the generator."
+HOMEPAGE="https://wiki.qt.io/Qt_for_Python"
+COPYRIGHT="2015-2025 The Qt Company Ltd."
+LICENSE="BSD (3-clause)
+	GNU GPL v3
+	GNU LGPL v3"
+REVISION="1"
+SOURCE_URI="https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-$portVersion-src/pyside-setup-everywhere-src-$portVersion.tar.xz"
+CHECKSUM_SHA256="3a2b0d0d6e78c9aa5ddc7f06ca4b6f11a3fe14560baeb148eea53b5d98e368c7"
+SOURCE_DIR="pyside-setup-everywhere-src-$portVersion"
+PATCHES="shiboken6-$portVersion.patchset"
+
+ARCHITECTURES="?all x86_64"
+SECONDARY_ARCHITECTURES="?x86"
+
+libVersion="$portVersion"
+libVersionCompat="$libVersion compat >= ${libVersion%.*}"
+
+PROVIDES="
+	shiboken6$secondaryArchSuffix = $portVersion
+	cmd:shiboken_tool.py = $portVersion
+	cmd:shiboken6 = $portVersion
+	lib:libshiboken6.abi3$secondaryArchSuffix = $libVersionCompat
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libclang$secondaryArchSuffix
+	lib:libQt6Core$secondaryArchSuffix
+	"
+
+PROVIDES_devel="
+	shiboken6${secondaryArchSuffix}_devel = $portVersion
+	devel:libshiboken6.abi3$secondaryArchSuffix = $libVersionCompat
+	"
+REQUIRES_devel="
+	shiboken6$secondaryArchSuffix == $portVersion base
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+#	gcc${secondaryArchSuffix}_syslibs_devel # for building the tests
+#	qt6_tools${secondaryArchSuffix}_devel # doesn't find qdoc(6)?
+	devel:libclang$secondaryArchSuffix >= 18
+	devel:libclang_cpp$secondaryArchSuffix >= 18
+	devel:libLLVM_18$secondaryArchSuffix
+	devel:libQt6Core$secondaryArchSuffix
+#	devel:libxml2$secondaryArchSuffix
+#	devel:libxslt$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+#	numpy_python310
+#	sphinx_python310
+	cmd:clang_18
+	cmd:cmake
+#	cmd:dot
+#	cmd:doxygen
+	cmd:gcc$secondaryArchSuffix
+	cmd:llvm_config >= 18
+	cmd:make
+	cmd:pkg_config$secondaryArchSuffix
+	cmd:python3.10
+	"
+
+BUILD()
+{
+	cd sources/shiboken6
+	cmake -B build -S. -DCMAKE_BUILD_TYPE=Release \
+		$cmakeDirArgs \
+		-DLIB_INSTALL_DIR=$libDir \
+		-DPYTHON_SITE_PACKAGES=$libDir/python3.10/vendor-packages \
+		-DBUILD_SHARED_LIBS=ON \
+		-DBUILD_TESTS=OFF
+
+	make -C build $jobArgs
+}
+
+INSTALL()
+{
+	cd sources/shiboken6
+	make -C build install
+
+	prepareInstalledDevelLib \
+		libshiboken6.abi3
+	fixPkgconfig
+
+	packageEntries devel \
+		$developDir \
+		$libDir/cmake
+}
+
+TEST()
+{
+	# 19% tests passed, 153 tests failed out of 190
+	# ModuleNotFoundError: No module named 'shiboken6'
+	# ModuleNotFoundError: No module named 'sample'
+	# ModuleNotFoundError: No module named 'smart'
+	ctest --test-dir build --output-on-failure
+}

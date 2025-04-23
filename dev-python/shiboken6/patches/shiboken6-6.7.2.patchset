@@ -1,0 +1,57 @@
+From 24596f7f30ce6b2f10e6b5a7a1977c21b2e088c5 Mon Sep 17 00:00:00 2001
+From: Luc Schrijvers <begasus@gmail.com>
+Date: Wed, 16 Apr 2025 15:09:57 +0200
+Subject: Fix?
+
+
+diff --git a/sources/pyside6/qtexampleicons/module.c b/sources/pyside6/qtexampleicons/module.c
+index b728daf..45911f4 100644
+--- a/sources/pyside6/qtexampleicons/module.c
++++ b/sources/pyside6/qtexampleicons/module.c
+@@ -1,7 +1,7 @@
+ // Copyright (C) 2023 The Qt Company Ltd.
+ // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+ 
+-#include <Python.h>
++#include <python3.10/Python.h>
+ 
+ #if defined _WIN32
+ #  define MODULE_EXPORT __declspec(dllexport)
+diff --git a/sources/shiboken6/libshiboken/CMakeLists.txt b/sources/shiboken6/libshiboken/CMakeLists.txt
+index 14e3894..36c6ca9 100644
+--- a/sources/shiboken6/libshiboken/CMakeLists.txt
++++ b/sources/shiboken6/libshiboken/CMakeLists.txt
+@@ -108,7 +108,7 @@ add_library(Shiboken6::libshiboken ALIAS libshiboken)
+ target_include_directories(libshiboken PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+-  $<INSTALL_INTERFACE:include/shiboken6>
++  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/shiboken6>
+ )
+ 
+ if (NOT "${NUMPY_INCLUDE_DIR}" STREQUAL "")
+@@ -190,7 +190,7 @@ install(FILES
+         signature.h
+         signature_p.h
+ 
+-        DESTINATION include/shiboken6${shiboken6_SUFFIX})
++        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/shiboken6${shiboken6_SUFFIX})
+ install(TARGETS libshiboken EXPORT Shiboken6Targets
+                             LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
+                             ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
+diff --git a/sources/shiboken6/libshiboken/helper.cpp b/sources/shiboken6/libshiboken/helper.cpp
+index 6c1a897..0429e99 100644
+--- a/sources/shiboken6/libshiboken/helper.cpp
++++ b/sources/shiboken6/libshiboken/helper.cpp
+@@ -574,6 +574,8 @@ ThreadId currentThreadId()
+     return GetCurrentThreadId();
+ #elif defined(__APPLE_CC__)
+     return reinterpret_cast<ThreadId>(pthread_self());
++#elif defined(__HAIKU__)
++    return true;
+ #else
+     return pthread_self();
+ #endif
+-- 
+2.48.1
+
