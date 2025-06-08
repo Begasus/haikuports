@@ -1,0 +1,27 @@
+From ebed90917297af35578f46f344c60b8f44b46e7b Mon Sep 17 00:00:00 2001
+From: Begasus <begasus@gmail.com>
+Date: Sun, 31 Dec 2023 13:53:52 +0100
+Subject: Disable KDBusService
+
+
+diff --git a/src/manager/main.cpp b/src/manager/main.cpp
+index a9ca63f..8ba28f7 100644
+--- a/src/manager/main.cpp
++++ b/src/manager/main.cpp
+@@ -49,11 +49,13 @@ int main(int argc, char **argv)
+     parser.process(a);
+     aboutData.processCommandLine(&parser);
+ 
++#ifndef Q_OS_HAIKU
+     KDBusService dbssvc(KDBusService::Unique);
+ 
+     auto wm = new KWalletManager(&parser);
+     QObject::connect(&dbssvc, &KDBusService::activateRequested, wm, &KWalletManager::handleActivate);
+     QObject::connect(&dbssvc, &KDBusService::openRequested, wm, &KWalletManager::handleOpen);
++#endif
+ 
+     return a.exec();
+ }
+-- 
+2.48.1
+

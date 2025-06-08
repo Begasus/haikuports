@@ -1,0 +1,125 @@
+SUMMARY="Tool to manage the passwords on your system"
+DESCRIPTION="KWalletManager is a tool to manage the passwords on your system. By using the \
+Frameworks wallet subsystem it not only allows you to keep your own secrets but also to access \
+and manage the passwords of every application that integrates with the wallet."
+HOMEPAGE="https://apps.kde.org/kwalletmanager5/"
+COPYRIGHT="2010-2025 KDE Organisation"
+LICENSE="GNU GPL v2"
+REVISION="1"
+SOURCE_URI="https://download.kde.org/stable/release-service/$portVersion/src/kwalletmanager-$portVersion.tar.xz"
+CHECKSUM_SHA256="626a240826f551841395bc61742ef45390995df57cd9aecd44a9fdb17b96cf28"
+SOURCE_DIR="kwalletmanager-$portVersion"
+PATCHES="kwalletmanager-$portVersion.patchset"
+#ADDITIONAL_FILES="kwalletmanager.rdef.in"
+
+ARCHITECTURES="all !x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+PROVIDES="
+	kwalletmanager$secondaryArchSuffix = $portVersion
+	cmd:kwalletmanager5$secondaryArchSuffix = $portVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libGL$secondaryArchSuffix
+	# KF6
+	lib:libKF6Archive$secondaryArchSuffix
+	lib:libKF6AuthCore$secondaryArchSuffix
+	lib:libKF6AuthCore$secondaryArchSuffix
+	lib:libKF6Codecs$secondaryArchSuffix
+	lib:libKF6ColorScheme$secondaryArchSuffix
+	lib:libKF6ConfigCore$secondaryArchSuffix
+	lib:libKF6ConfigGui$secondaryArchSuffix
+	lib:libKF6ConfigWidgets$secondaryArchSuffix
+	lib:libKF6CoreAddons$secondaryArchSuffix
+	lib:libKF6Crash$secondaryArchSuffix
+	lib:libKF6DbusAddons$secondaryArchSuffix
+	lib:libKF6GuiAddons$secondaryArchSuffix
+	lib:libKF6I18n$secondaryArchSuffix
+	lib:libKF6ItemViews$secondaryArchSuffix
+	lib:libKF6KIOCore$secondaryArchSuffix
+	lib:libKF6KIOGui$secondaryArchSuffix
+	lib:libKF6JobWidgets$secondaryArchSuffix
+	lib:libKF6Notifications$secondaryArchSuffix
+	lib:libKF6Service$secondaryArchSuffix
+	lib:libKF6StatusNotifierItem$secondaryArchSuffix
+	lib:libKF6Wallet$secondaryArchSuffix
+	lib:libKF6WidgetsAddons$secondaryArchSuffix
+	lib:libKF6WindowSystem$secondaryArchSuffix
+	lib:libKF6XmlGui$secondaryArchSuffix
+	# Qt6
+	lib:libQt6Core$secondaryArchSuffix
+	lib:libQt6DBus$secondaryArchSuffix
+	lib:libQt6Gui$secondaryArchSuffix
+	lib:libQt6Network$secondaryArchSuffix
+	lib:libQt6Widgets$secondaryArchSuffix
+	lib:libQt6Xml$secondaryArchSuffix
+	"
+CONFLICTS="
+	kwalletmanager$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	# KF6
+	extra_cmake_modules$secondaryArchSuffix
+	devel:libKF6Archive$secondaryArchSuffix
+	devel:libKF6AuthCore$secondaryArchSuffix
+	devel:libKF6Bookmarks$secondaryArchSuffix
+	devel:libKF6Codecs$secondaryArchSuffix
+	devel:libKF6ColorScheme$secondaryArchSuffix
+	devel:libKF6Completion$secondaryArchSuffix
+	devel:libKF6ConfigCore$secondaryArchSuffix
+	devel:libKF6ConfigWidgets$secondaryArchSuffix
+	devel:libKF6CoreAddons$secondaryArchSuffix
+	devel:libKF6Crash$secondaryArchSuffix
+	devel:libKF6DbusAddons$secondaryArchSuffix
+#	devel:libKF6DocTools$secondaryArchSuffix
+	devel:libKF6GuiAddons$secondaryArchSuffix
+	devel:libKF6I18n$secondaryArchSuffix
+	devel:libKF6ItemViews$secondaryArchSuffix
+	devel:libKF6JobWidgets$secondaryArchSuffix
+	devel:libKF6KCMUtils$secondaryArchSuffix
+	devel:libKF6KIOCore$secondaryArchSuffix
+	devel:libKF6Notifications$secondaryArchSuffix
+	devel:libKF6Service$secondaryArchSuffix
+	devel:libKF6Solid$secondaryArchSuffix
+	devel:libKF6SonnetCore$secondaryArchSuffix
+	devel:libKF6StatusNotifierItem$secondaryArchSuffix
+	devel:libKF6TextWidgets$secondaryArchSuffix
+	devel:libKF6Wallet$secondaryArchSuffix
+	devel:libKF6WidgetsAddons$secondaryArchSuffix
+	devel:libKF6WindowSystem$secondaryArchSuffix
+	devel:libKF6XmlGui$secondaryArchSuffix
+	# Qt6
+	devel:libQt6Core$secondaryArchSuffix
+	devel:libQt6Qml$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:cmake
+	cmd:g++$secondaryArchSuffix
+	cmd:make
+	cmd:msgfmt$secondaryArchSuffix
+	cmd:msgmerge$secondaryArchSuffix
+	cmd:pkg_config$secondaryArchSuffix
+	"
+
+BUILD()
+{
+	cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
+		$cmakeDirArgs \
+		-DKDE_INSTALL_PLUGINDIR=$addOnsDir/Qt6 \
+		-DECM_DIR=/system/data/cmake/Modules/ECM/cmake \
+		-DBUILD_DOC=OFF \
+		-Wno-dev
+
+	make -C build $jobArgs
+}
+
+INSTALL()
+{
+	make -C build install
+
+	# cleanup
+	rm -rf $dataDir/{applications,icons,metainfo}
+}
