@@ -1,0 +1,31 @@
+From 8333cef4214696b1f7074a839a3165abe2e7294c Mon Sep 17 00:00:00 2001
+From: Begasus <begasus@gmail.com>
+Date: Tue, 28 Jan 2025 15:59:49 +0100
+Subject: Disable QDBusConnection
+
+
+diff --git a/src/mpv/mpvitem.cpp b/src/mpv/mpvitem.cpp
+index 9e18b2c..d1bca35 100644
+--- a/src/mpv/mpvitem.cpp
++++ b/src/mpv/mpvitem.cpp
+@@ -32,7 +32,7 @@
+ #include "videosettings.h"
+ #include "worker.h"
+ 
+-#if defined(Q_OS_UNIX)
++#if defined(Q_OS_UNIX) && !defined(Q_OS_HAIKU)
+ #include <QDBusConnection>
+ 
+ #include "lockmanager.h"
+@@ -260,7 +260,7 @@ void MpvItem::setupConnections()
+     });
+ #endif
+ 
+-#if defined(Q_OS_UNIX)
++#if defined(Q_OS_UNIX) && !defined(Q_OS_HAIKU)
+     connect(this, &MpvItem::pauseChanged, this, [=]() {
+         static LockManager lockManager;
+         if (!pause() && !m_currentUrl.isEmpty()) {
+-- 
+2.48.1
+

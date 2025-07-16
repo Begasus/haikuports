@@ -1,0 +1,174 @@
+SUMMARY="KDE Media Player"
+DESCRIPTION="Open source media player built with Qt/QML and libmpv.
+
+Features
+* play online videos, through youtube-dl
+* supports youtube playlists
+* toggle playlist with mouse-over, playlist overlays the video
+* auto skip chapter containing certain words
+* configurable shortcuts and mouse buttons
+* quick jump to next chapter by middle click on progress bar"
+HOMEPAGE="https://apps.kde.org/haruna/"
+COPYRIGHT="2010-2025 KDE Organisation"
+LICENSE="GNU GPL v3"
+REVISION="1"
+SOURCE_URI="https://download.kde.org/stable/haruna/$portVersion/haruna-$portVersion.tar.xz"
+CHECKSUM_SHA256="3cb47be3148dcc8637ff5262573390ca5edc2ece00028af790d7355347d8df6e"
+PATCHES="haruna-$portVersion.patchset"
+ADDITIONAL_FILES="haruna.rdef.in"
+
+ARCHITECTURES="all !x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+libVersion="$portVersion"
+libVersionCompat="$libVersion compat >= ${libVersion%%.*}"
+
+PROVIDES="
+	haruna$secondaryArchSuffix = $portVersion
+	cmd:haruna$secondaryArchSuffix = $portVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	cmd:youtube_dl
+	cmd:yt_dlp
+	lib:libavcodec$secondaryArchSuffix
+	lib:libavfilter$secondaryArchSuffix
+	lib:libavformat$secondaryArchSuffix
+	lib:libavutil$secondaryArchSuffix
+	lib:libGL$secondaryArchSuffix
+	lib:libmpv$secondaryArchSuffix
+	lib:libmpvqt$secondaryArchSuffix
+	lib:libswscale$secondaryArchSuffix
+	# KF6
+	lib:libKF6ColorScheme$secondaryArchSuffix
+	lib:libKF6Completion$secondaryArchSuffix
+	lib:libKF6ConfigCore$secondaryArchSuffix
+	lib:libKF6CoreAddons$secondaryArchSuffix
+	lib:libKF6Crash$secondaryArchSuffix
+	lib:libKF6FileMetaData$secondaryArchSuffix
+	lib:libKF6I18n$secondaryArchSuffix
+	lib:libKF6IconThemes$secondaryArchSuffix
+	lib:libKF6KIOCore$secondaryArchSuffix
+	lib:libKF6JobWidgets$secondaryArchSuffix
+	lib:libKF6Service$secondaryArchSuffix
+	lib:libKF6Solid$secondaryArchSuffix
+	lib:libKF6WidgetsAddons$secondaryArchSuffix
+	lib:libKF6WindowSystem$secondaryArchSuffix
+	lib:libKirigami$secondaryArchSuffix
+	lib:libKirigamiPlatform$secondaryArchSuffix
+	# Qt6
+	lib:libQt6Core$secondaryArchSuffix
+	lib:libQt6Core5Compat$secondaryArchSuffix
+	lib:libQt6DBus$secondaryArchSuffix
+	lib:libQt6Gui$secondaryArchSuffix
+	lib:libQt6Network$secondaryArchSuffix
+	lib:libQt6Qml$secondaryArchSuffix
+	lib:libQt6Quick$secondaryArchSuffix
+	lib:libQt6Widgets$secondaryArchSuffix
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	ffmpeg5${secondaryArchSuffix}_devel
+#	devel:libavcodec$secondaryArchSuffix >= 60
+#	devel:libavfilter$secondaryArchSuffix >= 9
+#	devel:libavformat$secondaryArchSuffix >= 60
+#	devel:libavutil$secondaryArchSuffix >= 58
+	devel:libmpv$secondaryArchSuffix
+	devel:libmpvqt$secondaryArchSuffix
+#	devel:libswscale$secondaryArchSuffix >= 7
+	# KF6
+	extra_cmake_modules$secondaryArchSuffix
+	devel:libKF6Bookmarks$secondaryArchSuffix
+	devel:libKF6BreezeIcons$secondaryArchSuffix
+	devel:libKF6ColorScheme$secondaryArchSuffix
+	devel:libKF6Completion$secondaryArchSuffix
+	devel:libKF6ConfigCore$secondaryArchSuffix
+	devel:libKF6CoreAddons$secondaryArchSuffix
+	devel:libKF6Crash$secondaryArchSuffix
+	devel:libKF6FileMetaData$secondaryArchSuffix
+	devel:libKF6I18n$secondaryArchSuffix
+	devel:libKF6IconThemes$secondaryArchSuffix
+	devel:libKF6ItemViews$secondaryArchSuffix
+	devel:libKF6JobWidgets$secondaryArchSuffix
+	devel:libKF6KIOCore$secondaryArchSuffix
+	devel:libKF6Service$secondaryArchSuffix
+	devel:libKF6Solid$secondaryArchSuffix
+	devel:libKF6WidgetsAddons$secondaryArchSuffix
+	devel:libKF6WindowSystem$secondaryArchSuffix
+	devel:libKirigami$secondaryArchSuffix
+	devel:libKirigamiPlatform$secondaryArchSuffix
+	# Plasma6
+	devel:breeze6$secondaryArchSuffix
+	# Qt6
+	devel:libQt6Core$secondaryArchSuffix
+	devel:libQt6Core5Compat$secondaryArchSuffix
+	devel:libQt6Gui$secondaryArchSuffix
+	devel:libQt6OpenGL$secondaryArchSuffix
+	devel:libQt6Qml$secondaryArchSuffix
+	devel:libQt6Quick$secondaryArchSuffix
+	devel:libQt6Svg$secondaryArchSuffix
+	devel:libQt6Widgets$secondaryArchSuffix
+	devel:libQt6Xml$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:cmake
+	cmd:g++$secondaryArchSuffix
+	cmd:make
+	cmd:msgfmt$secondaryArchSuffix
+	cmd:msgmerge$secondaryArchSuffix
+	cmd:pkg_config$secondaryArchSuffix
+	cmd:python3
+	cmd:youtube_dl
+	cmd:yt_dlp
+	"
+
+#TEST_REQUIRES="
+#	qthaikuplugins$secondaryArchSuffix
+#	"
+
+BUILD()
+{
+	cmake -B build -S . $cmakeDirArgs \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DKDE_INSTALL_PLUGINDIR=$addOnsDir/Qt6 \
+		-DKDE_INSTALL_QTPLUGINDIR=$addOnsDir/Qt6 \
+		-DKDE_INSTALL_QMLDIR=$dataDir/Qt6/qml \
+		-DECM_DIR=/system/data/cmake/Modules/ECM/cmake \
+		-Wno-dev
+
+	make -C build $jobArgs
+}
+
+INSTALL()
+{
+	make -C build install
+
+	# cleanup
+	rm -rf $dataDir/{applications,metainfo}
+
+	local MAJOR="`echo "$portVersion" | cut -d. -f1`"
+	local MIDDLE="`echo "$portVersion" | cut -d. -f2`"
+	local MINOR="`echo "$portVersion" | cut -d. -f3`"
+	local APP_NAME="Haruna"
+	local LONG_INFO="$SUMMARY"
+	local APP_SIGNATURE="application/x-vnd.kde-haruna"
+	sed \
+		-e "s|@MAJOR@|$MAJOR|" \
+		-e "s|@MIDDLE@|$MIDDLE|" \
+		-e "s|@MINOR@|$MINOR|" \
+		-e "s|@LONG_INFO@|$LONG_INFO|" \
+		-e "s|@APP_NAME@|$APP_NAME|" \
+		-e "s|@APP_SIGNATURE@|$APP_SIGNATURE|" \
+		$portDir/additional-files/haruna.rdef.in > haruna.rdef
+
+	addResourcesToBinaries haruna.rdef $binDir/haruna
+	addAppDeskbarSymlink $binDir/haruna Haruna
+}
+
+TEST()
+{
+#	export LIBRARY_PATH="$sourceDir/build/bin${LIBRARY_PATH:+:$LIBRARY_PATH}"
+	ctest --test-dir build --output-on-failure
+#	make -C build test
+}
