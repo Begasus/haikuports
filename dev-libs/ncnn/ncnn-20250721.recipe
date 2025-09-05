@@ -1,0 +1,129 @@
+SUMMARY="High-performance neural network inference framework"
+DESCRIPTION="ncnn is a high-performance neural network inference computing framework optimized \
+for mobile platforms. ncnn is deeply considerate about deployment and uses on mobile phones from \
+the beginning of design. ncnn does not have third-party dependencies. It is cross-platform and \
+runs faster than all known open-source frameworks on mobile phone cpu. Developers can easily \
+deploy deep learning algorithm models to the mobile platform by using efficient ncnn \
+implementation, creating intelligent APPs, and bringing artificial intelligence to your fingertips.
+ncnn is currently being used in many Tencent applications, such as QQ, Qzone, WeChat, Pitu, and \
+so on."
+HOMEPAGE="https://github.com/Tencent/ncnn"
+COPYRIGHT="2017 Tencent"
+LICENSE="BSD (3-clause)"
+REVISION="1"
+srcGitRev="d7df277f9cc15a00b19877ab75b287ade42a22ab"
+SOURCE_URI="https://github.com/Tencent/ncnn/archive/$srcGitRev.tar.gz"
+CHECKSUM_SHA256="989bb0f7b8a00c24b3b297cdc7f23c6932a5676731c7dda24ea29dfc8eae4668"
+SOURCE_DIR="ncnn-$srcGitRev"
+#PATCHES="projectx-$portVersion.patchset"
+
+ARCHITECTURES="all !x86_gcc2"
+SECONDARY_ARCHITECTURES="?x86"
+
+# On x86_gcc2 we don't want to install the commands in bin/<arch>/, but in bin/.
+commandSuffix=$secondaryArchSuffix
+commandBinDir=$binDir
+if [ "$targetArchitecture" = x86_gcc2 ]; then
+	commandSuffix=
+	commandBinDir=$prefix/bin
+fi
+
+libVersion="1.0.20250905"
+libVersionCompat="$libVersion compat >= ${libVersion%%.*}"
+
+PROVIDES="
+	ncnn$secondaryArchSuffix = $portVersion
+	lib:libncnn$secondaryArchSuffix = $libVersionCompat
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libglslang$secondaryArchSuffix
+	lib:libgomp$secondaryArchSuffix
+	lib:libprotobuf$secondaryArchSuffix
+	lib:libSPIRV$secondaryArchSuffix
+	"
+
+PROVIDES_devel="
+	ncnn${secondaryArchSuffix}_devel = $portVersion
+	devel:libncnn$secondaryArchSuffix = $libVersionCompat
+	"
+REQUIRES_devel="
+	ncnn$secondaryArchSuffix == $portVersion base
+	"
+
+PROVIDES_tools="
+	ncnn${secondaryArchSuffix}_tools = $portVersion
+	cmd:caffe2ncnn$commandSuffix = $portVersion
+	cmd:darknet2ncnn$commandSuffix = $portVersion
+	cmd:mxnet2ncnn$commandSuffix = $portVersion
+	cmd:ncnn2int8$commandSuffix = $portVersion
+	cmd:ncnn2mem$commandSuffix = $portVersion
+	cmd:ncnn2table$commandSuffix = $portVersion
+	cmd:ncnnmerge$commandSuffix = $portVersion
+	cmd:ncnnoptimize$commandSuffix = $portVersion
+	cmd:onnx2ncnn$commandSuffix = $portVersion
+	"
+REQUIRES_tools="
+	ncnn$secondaryArchSuffix == $portVersion base
+	$REQUIRES
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libglslang$secondaryArchSuffix
+	devel:libopencv_core$secondaryArchSuffix
+	devel:libprotobuf$secondaryArchSuffix >= 31
+	devel:libvulkan$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:cmake
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	cmd:pkg_config$secondaryArchSuffix
+	"
+
+defineDebugInfoPackage ncnn$secondaryArchSuffix \
+	"$(getPackagePrefix tools)"/bin/caffe2ncnn \
+	"$(getPackagePrefix tools)"/bin/darknet2ncnn \
+	"$(getPackagePrefix tools)"/bin/mxnet2ncnn \
+	"$(getPackagePrefix tools)"/bin/ncnn2mem \
+	"$(getPackagePrefix tools)"/bin/ncnn2table \
+	"$(getPackagePrefix tools)"/bin/ncnnmerge \
+	"$(getPackagePrefix tools)"/bin/ncnnoptimize \
+	"$(getPackagePrefix tools)"/bin/onnx2ncnn \
+	$libDir/libncnn.so.$libVersion
+
+BUILD()
+{
+	cmake -B build -S . -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		$cmakeDirArgs \
+		-DCMAKE_INSTALL_BINDIR=$commandBinDir \
+		-DNCNN_SHARED_LIB=ON \
+		-DNCNN_VULKAN=ON \
+		-DNCNN_SYSTEM_GLSLANG=ON \
+		-DGLSLANG_TARGET_DIR=/boot/system/lib/cmake \
+		-DNCNN_DISABLE_PIC=ON
+
+	make -C build $jobArgs
+}
+
+INSTALL()
+{
+	make -C build install
+
+	prepareInstalledDevelLib \
+		libncnn
+	fixPkgconfig
+
+	packageEntries devel \
+		$developDir \
+		$libDir/cmake
+
+	packageEntries tools \
+		$commandBinDir
+}
+
+TEST()
+{
+	make -C build check
+}
