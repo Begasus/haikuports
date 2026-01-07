@@ -1,0 +1,97 @@
+From 2a3fb81a97e4e3cc72e1a79f16cdafb4323b2e1e Mon Sep 17 00:00:00 2001
+From: Luc Schrijvers <begasus@gmail.com>
+Date: Wed, 7 Jan 2026 14:08:19 +0100
+Subject: Change some path values
+
+
+diff --git a/src/apikeys.c b/src/apikeys.c
+index 9624081..968d74f 100644
+--- a/src/apikeys.c
++++ b/src/apikeys.c
+@@ -7,7 +7,7 @@
+ 
+ /* Return the path to the apikeys.txt file */
+ R_API char *r2ai_apikeys_path(bool *exists) {
+-	char *path = r_file_home (".config/r2ai/apikeys.txt");
++	char *path = r_file_home ("config/settings/r2ai/apikeys.txt");
+ 	if (exists) {
+ 		*exists = r_file_exists (path);
+ 	}
+@@ -31,7 +31,7 @@ R_API void r2ai_apikeys_edit(RCorePluginSession *cps) {
+ 	free (keys_path);
+ }
+ 
+-/* Return a malloc'd API key read from ~/.config/r2ai/apikeys.txt
++/* Return a malloc'd API key read from ~/config/setttings/r2ai/apikeys.txt
+  * Provider matching is case-insensitive */
+ R_API char *r2ai_apikeys_get(const char *provider) {
+ 	if (!provider) {
+diff --git a/src/main.c b/src/main.c
+index c3ce4a5..bb61d75 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -152,7 +152,7 @@ int main(int argc, const char **argv) {
+ 			break;
+ 		case 'E':
+ 			{
+-				char *rc_path = r_file_home (".config/r2ai/rc");
++				char *rc_path = r_file_home ("config/settings/r2ai/rc");
+ 				r_cons_editor (core->cons, rc_path, NULL);
+ 				free (rc_path);
+ 				goto beach;
+diff --git a/src/query.c b/src/query.c
+index 3129d41..1300b4e 100644
+--- a/src/query.c
++++ b/src/query.c
+@@ -172,7 +172,7 @@ R_API void r2ai_cmd_q(RCorePluginSession *cps, const char *input) {
+ 	RCore *core = cps->core;
+ 	const char *promptdir = r_config_get (core->config, "r2ai.promptdir");
+ 	if (!promptdir || !*promptdir) {
+-		promptdir = "~/.config/r2ai/prompts";
++		promptdir = "config/settings/r2ai/prompts";
+ 	}
+ 	char *expanded_dir = r_file_abspath (promptdir);
+ 	char *local_prompts = r_file_abspath ("../prompts");
+@@ -316,7 +316,7 @@ R_API void r2ai_cmd_q(RCorePluginSession *cps, const char *input) {
+ R_API char *r2ai_load_prompt_text(RCore *core, const char *name) {
+ 	const char *promptdir = r_config_get (core->config, "r2ai.promptdir");
+ 	if (!promptdir || !*promptdir) {
+-		promptdir = "~/.config/r2ai/prompts";
++		promptdir = "config/settings/r2ai/prompts";
+ 	}
+ 	char *expanded_dir = r_file_abspath (promptdir);
+ 	char *local_prompts = r_file_abspath ("../prompts");
+diff --git a/src/r2ai.c b/src/r2ai.c
+index e00dcf5..c8fe60b 100644
+--- a/src/r2ai.c
++++ b/src/r2ai.c
+@@ -282,7 +282,7 @@ static void load_embeddings(RCorePluginSession *cps) {
+ }
+ 
+ static bool load_r2airc(RCorePluginSession *cps) {
+-	char *rc_path = r_file_home (".config/r2ai/rc");
++	char *rc_path = r_file_home ("config/settigns/r2ai/rc");
+ 	if (rc_path && r_file_exists (rc_path)) {
+ 		char *content = r_file_slurp (rc_path, NULL);
+ 		if (content) {
+@@ -320,7 +320,7 @@ R_API void cmd_r2ai(RCorePluginSession *cps, const char *input) {
+ 	} else if (r_str_startswith (input, "-K")) {
+ 		r2ai_apikeys_edit (cps);
+ 	} else if (r_str_startswith (input, "-E")) {
+-		char *rc_path = r_file_home (".config/r2ai/rc");
++		char *rc_path = r_file_home ("config/settings/r2ai/rc");
+ 		r_cons_editor (core->cons, rc_path, NULL);
+ 		free (rc_path);
+ 		load_r2airc (cps);
+@@ -575,7 +575,7 @@ R_IPI bool r2ai_init(RCorePluginSession *cps) {
+ 		"with if/else/for, use NO explanations, NO markdown, Simplify as much as "
+ 		"possible, use better variable names, take function arguments and "
+ 		"strings from comments like 'string:'");
+-	r_config_set (core->config, "r2ai.promptdir", "~/.config/r2ai/prompts");
++	r_config_set (core->config, "r2ai.promptdir", "config/settings/r2ai/prompts");
+ 	r_config_desc (core->config, "r2ai.promptdir", "Directory containing .r2ai prompt files");
+ 	r_config_set_b (core->config, "r2ai.clippy", false);
+ 	r_config_desc (core->config, "r2ai.clippy", "Responses from the llm will be displayed by clippy");
+-- 
+2.52.0
+

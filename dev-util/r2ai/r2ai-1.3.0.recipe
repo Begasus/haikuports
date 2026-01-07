@@ -1,0 +1,87 @@
+SUMMARY="LLM-based reversing for radare2"
+DESCRIPTION="R2AI - Augmented reversing with LLM for radare2
+Components
+
+This repository contains two plugins for radare2:
+
+* r2ai - native AI plugin for radare2
+* decai - r2js plugin with special focus on decompilation
+If you are looking to use radare2 with other agents via MCP:
+
+* r2mcp - the official radare2 mcp
+* r2copilot - the mcp with focus on CTF r2copilot
+
+Features
+
+* Configure different roles and customize prompts
+* Scriptable via r2pipe via the r2ai command
+* Live with repl and batch mode from cli or r2 prompt
+* Support Automatic (ReAct) mode to solve tasks using function calling
+* Use local and remote language models (ollama, openai, grok, anthropic, ..)
+* RAG markdown, code or textfiles using its native vector database
+* Embed the output of an r2 command and resolve questions on the given data"
+HOMEPAGE="https://github.com/radareorg/r2ai/"
+COPYRIGHT="2024 pancake"
+LICENSE="MIT"
+REVISION="1"
+SOURCE_URI="https://github.com/radareorg/r2ai/archive/refs/tags/$portVersion.tar.gz"
+CHECKSUM_SHA256="1df5135bcae9d310f37216b41d7d3a10f061d9fda18808b6d6397d8b7b2c5e4d"
+PATCHES="r2ai-$portVersion.patchset"
+ADDITIONAL_FILES="r2ai_prompts-install.sh"
+
+ARCHITECTURES="all !x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+GLOBAL_WRITABLE_FILES="
+	settings/r2ai directory keep-old
+	"
+
+POST_INSTALL_SCRIPTS="r2ai_prompts-install.sh"
+
+PROVIDES="
+	r2ai$secondaryArchSuffix = $portVersion
+	cmd:r2ai = $portVersion
+	"
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libr_core$secondaryArchSuffix # don't list all radare2 libraries
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	devel:libr_core$secondaryArchSuffix
+	devel:libcurl$secondaryArchSuffix
+	"
+BUILD_PREREQUIRES="
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	cmd:pkg_config$secondaryArchSuffix
+	"
+
+BUILD()
+{
+	make PREFIX=$prefix  \
+		R2_LIBR_PLUGINS=$libDir/radare2/6.0.8 \
+		R2SYSPLUGDIR=$libDir/radare2/6.0.8 \
+		R2PM_BINDIR=$prefix/bin \
+		R2PM_MANDIR=$manDir\
+		$jobArgs
+}
+
+INSTALL()
+{
+#	make install DESTDIR=$prefix \
+#		R2_LIBR_PLUGINS=$libDir/radare2/6.0.8 \
+#		R2SYSPLUGDIR=$libDir/radare2/6.0.8 \
+#		R2PM_BINDIR=$prefix/bin \
+#		R2PM_MANDIR=$manDir
+	# or
+	install -d $prefix/bin $libDir/radare2/6.0.8 $manDir/man1 $settingsDir/r2ai/prompts
+	install -t $prefix/bin src/r2ai
+	install -t $libDir/radare2/6.0.8 src/r2ai.so
+	install -t $manDir/man1 src/r2ai.1
+	install -t $settingsDir/r2ai/prompts prompts/*.r2ai.md
+
+	mkdir -p $postInstallDir
+	cp $portDir/additional-files/r2ai_prompts-install.sh $postInstallDir
+}
