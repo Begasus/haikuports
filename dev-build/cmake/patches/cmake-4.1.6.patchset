@@ -1,4 +1,4 @@
-From f19c1c73b6723969e727fbaf8fc71ff673d5fe7b Mon Sep 17 00:00:00 2001
+From 35df3de3c492878ce1d9d8e401249237273f2323 Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Sat, 7 Sep 2019 17:29:56 +0200
 Subject: links against libnetwork
@@ -22,7 +22,7 @@ index aea87b9..60eddf3 100755
 2.52.0
 
 
-From 116b868e7c19306fad316963a394cd3da10e1aea Mon Sep 17 00:00:00 2001
+From 26b81a90ef4d463c2c22609acb2db62437b1fcdb Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Sat, 7 Sep 2019 23:46:47 +0200
 Subject: bootstrap uses cmlibuv
@@ -57,7 +57,7 @@ index 83e8b61..314f239 100644
 2.52.0
 
 
-From ce069212be30318640c17f996e71c27f442118ee Mon Sep 17 00:00:00 2001
+From e89c419a90c5184ad567fa27687514a61d0b57db Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Sat, 21 Sep 2019 15:30:44 +0200
 Subject: Haiku: Improve secondary arch detection
@@ -83,7 +83,7 @@ index 3610389..7ce4298 100644
 2.52.0
 
 
-From 7fe08f3af5c810f7ec7e83f59c1978536d1ef62c Mon Sep 17 00:00:00 2001
+From 6f81697db441e80a8dd00020ddd936cd81561aa5 Mon Sep 17 00:00:00 2001
 From: Augustin Cavalier <waddlesplash@gmail.com>
 Date: Fri, 21 Feb 2020 15:38:39 -0500
 Subject: Modules/Haiku: Set CMAKE_SYSTEM_FRAMEWORK_PATH.
@@ -107,7 +107,7 @@ index 7ce4298..0bae6a8 100644
 2.52.0
 
 
-From bb920569a0c1fd882d273a241c81dc25e538fcf9 Mon Sep 17 00:00:00 2001
+From 44e4e14b311fcd88986da71b0a1f8b9839f3f877 Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Thu, 15 Apr 2021 21:09:12 +0200
 Subject: disable dependency tracking for older GNU compilers
@@ -132,7 +132,7 @@ index 141838e..1c90942 100644
 2.52.0
 
 
-From 33005aefaa579900573b9e790ff143f7977d0a68 Mon Sep 17 00:00:00 2001
+From b314d212841643a6fee9335aa94abece97cc9bbf Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Wed, 20 Oct 2021 14:28:22 +0200
 Subject: Haiku: fix install dirs, let FindPackage search in data/
@@ -176,7 +176,7 @@ index 23083b0..6cc8a1a 100644
 2.52.0
 
 
-From 1a9a410354a04638cd66e0882b89b068b3859b7c Mon Sep 17 00:00:00 2001
+From 937932195ed094f70d4b8ff07b798acc989f6140 Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Wed, 23 Feb 2022 13:44:06 +0100
 Subject: Disable weak symbols; they do not seem to behave correctly.
@@ -199,7 +199,7 @@ index da20534..97bcdc2 100644
 2.52.0
 
 
-From 32cea27259a21ea481a39960e06bf4a872014398 Mon Sep 17 00:00:00 2001
+From 4cf0816fca0da5a409a098a64aff1aaf21dd7133 Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Fri, 9 Feb 2024 13:48:22 +0100
 Subject: Haiku: enable debugger
@@ -236,7 +236,7 @@ index c54da44..df99db8 100644
 2.52.0
 
 
-From b8684ef70b4e596063e97376e37e228c44ab1aaa Mon Sep 17 00:00:00 2001
+From 37e4085cf290e2fafdd4459ec4d65a9ba4713f14 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?M=C3=A1ximo=20Casta=C3=B1eda?= <antiswen@yahoo.es>
 Date: Sat, 31 Aug 2024 21:52:20 +0200
 Subject: Fix build for non-x86 arches
@@ -266,7 +266,7 @@ index c65587e..35788be 100644
 2.52.0
 
 
-From 387886e01f4cf886354e59845c8c79b1e0166033 Mon Sep 17 00:00:00 2001
+From 27f293ba91f70d601d95a5fa35799f3616b410cb Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
 Date: Wed, 25 Sep 2024 09:11:06 +0200
 Subject: FindPython: when component Development is searched, also search
@@ -293,7 +293,7 @@ index 24a3970..b1b2006 100644
 2.52.0
 
 
-From f9b015b843ba680d75cf1347951885d5963cbbf6 Mon Sep 17 00:00:00 2001
+From 8ba470a418f536f7e55daac1f20d22933e270a7b Mon Sep 17 00:00:00 2001
 From: Oscar Lesta <oscar.lesta@gmail.com>
 Date: Mon, 23 Sep 2024 05:40:41 -0300
 Subject: Use 'headers' instead of 'include' as fallback.
@@ -327,7 +327,7 @@ index b1b2006..33d8256 100644
 2.52.0
 
 
-From 6601a77d5dbe0b17c8ccd8fbdd66411acce8e2f3 Mon Sep 17 00:00:00 2001
+From 8ead90d7702917c66419515ba6dc527ab95e4b52 Mon Sep 17 00:00:00 2001
 From: Oscar Lesta <oscar.lesta@gmail.com>
 Date: Thu, 26 Sep 2024 15:16:36 -0300
 Subject: Avoid installing icons, .desktop, and mime files.
