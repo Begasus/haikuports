@@ -1,11 +1,11 @@
-From 47f09efb7d7ee1b1f369938c2b27afbfb64d2dd6 Mon Sep 17 00:00:00 2001
+From 36093c1a4513cab52ad1b3dca279107e8d792af3 Mon Sep 17 00:00:00 2001
 From: Gerasim Troeglazov <3dEyes@gmail.com>
 Date: Mon, 13 Feb 2023 19:37:32 +1000
 Subject: Fix build for Haiku
 
 
 diff --git a/Source/JavaScriptCore/API/glib/JSCOptions.cpp b/Source/JavaScriptCore/API/glib/JSCOptions.cpp
-index dd46ff5..54f6dac 100644
+index dd46ff59..54f6dac1 100644
 --- a/Source/JavaScriptCore/API/glib/JSCOptions.cpp
 +++ b/Source/JavaScriptCore/API/glib/JSCOptions.cpp
 @@ -73,7 +73,7 @@ static void valueToGValue(int32_t value, GValue* gValue)
@@ -27,7 +27,7 @@ index dd46ff5..54f6dac 100644
  {
      return JSC_OPTION_UINT;
 diff --git a/Source/JavaScriptCore/heap/BlockDirectory.cpp b/Source/JavaScriptCore/heap/BlockDirectory.cpp
-index f9df6f0..b456f9a 100644
+index f9df6f0c..b456f9ae 100644
 --- a/Source/JavaScriptCore/heap/BlockDirectory.cpp
 +++ b/Source/JavaScriptCore/heap/BlockDirectory.cpp
 @@ -60,7 +60,7 @@ void BlockDirectory::setSubspace(Subspace* subspace)
@@ -40,7 +40,7 @@ index f9df6f0..b456f9a 100644
      ASSERT(!(MarkedBlock::blockSize % pageSize));
      auto numberOfPagesInMarkedBlock = MarkedBlock::blockSize / pageSize;
 diff --git a/Source/JavaScriptCore/inspector/remote/Socket.cmake b/Source/JavaScriptCore/inspector/remote/Socket.cmake
-index e52143c..4ac504c 100644
+index e52143c4..4ac504c1 100644
 --- a/Source/JavaScriptCore/inspector/remote/Socket.cmake
 +++ b/Source/JavaScriptCore/inspector/remote/Socket.cmake
 @@ -33,3 +33,9 @@ else ()
@@ -54,7 +54,7 @@ index e52143c..4ac504c 100644
 +    )
 +endif ()
 diff --git a/Source/JavaScriptCore/runtime/Options.cpp b/Source/JavaScriptCore/runtime/Options.cpp
-index c94723d..eb09ee1 100644
+index c94723db..eb09ee1a 100644
 --- a/Source/JavaScriptCore/runtime/Options.cpp
 +++ b/Source/JavaScriptCore/runtime/Options.cpp
 @@ -92,7 +92,7 @@ std::optional<OptionsStorage::Unsigned> parse(const char* string)
@@ -76,7 +76,7 @@ index c94723d..eb09ee1 100644
  template<>
  std::optional<OptionsStorage::Double> parse(const char* string)
 diff --git a/Source/JavaScriptCore/wasm/js/WebAssemblyFunction.cpp b/Source/JavaScriptCore/wasm/js/WebAssemblyFunction.cpp
-index 0674973..7f6c924 100644
+index 06749730..7f6c9247 100644
 --- a/Source/JavaScriptCore/wasm/js/WebAssemblyFunction.cpp
 +++ b/Source/JavaScriptCore/wasm/js/WebAssemblyFunction.cpp
 @@ -360,7 +360,11 @@ CodePtr<JSEntryPtrTag> WebAssemblyFunction::jsCallEntrypointSlow()
@@ -92,7 +92,7 @@ index 0674973..7f6c924 100644
              if (mode == MemoryMode::BoundsChecking)
                  jit.move(CCallHelpers::TrustedImm64(instance()->instance().memory()->mappedCapacity()), GPRInfo::wasmBoundsCheckingSizeRegister);
 diff --git a/Source/ThirdParty/ANGLE/src/common/system_utils_posix.cpp b/Source/ThirdParty/ANGLE/src/common/system_utils_posix.cpp
-index 952f09e..c1e524f 100644
+index 952f09e3..c1e524f5 100644
 --- a/Source/ThirdParty/ANGLE/src/common/system_utils_posix.cpp
 +++ b/Source/ThirdParty/ANGLE/src/common/system_utils_posix.cpp
 @@ -210,10 +210,12 @@ void *OpenSystemLibraryWithExtensionAndGetError(const char *libraryName,
@@ -109,7 +109,7 @@ index 952f09e..c1e524f 100644
      std::string fullPath = directory + libraryName;
      return OpenPosixLibrary(fullPath, extraFlags, errorOut);
 diff --git a/Source/ThirdParty/ANGLE/src/libANGLE/Context.cpp b/Source/ThirdParty/ANGLE/src/libANGLE/Context.cpp
-index 0b8387e..3e11f12 100644
+index 0b8387e8..3e11f12d 100644
 --- a/Source/ThirdParty/ANGLE/src/libANGLE/Context.cpp
 +++ b/Source/ThirdParty/ANGLE/src/libANGLE/Context.cpp
 @@ -443,7 +443,7 @@ void SetCurrentValidContextTLS(Context *context)
@@ -122,7 +122,7 @@ index 0b8387e..3e11f12 100644
  
  Context::Context(egl::Display *display,
 diff --git a/Source/ThirdParty/ANGLE/src/libANGLE/Context.h b/Source/ThirdParty/ANGLE/src/libANGLE/Context.h
-index 9350bda..054fff2 100644
+index 9350bda2..054fff24 100644
 --- a/Source/ThirdParty/ANGLE/src/libANGLE/Context.h
 +++ b/Source/ThirdParty/ANGLE/src/libANGLE/Context.h
 @@ -895,7 +895,7 @@ class [[nodiscard]] ScopedContextRef
@@ -135,7 +135,7 @@ index 9350bda..054fff2 100644
  
  }  // namespace gl
 diff --git a/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.cpp b/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.cpp
-index f807cd2..3d975f0 100644
+index f807cd2e..3d975f06 100644
 --- a/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.cpp
 +++ b/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.cpp
 @@ -147,7 +147,7 @@ void SetCurrentThreadTLS(Thread *thread)
@@ -148,7 +148,7 @@ index f807cd2..3d975f0 100644
  
  angle::GlobalMutex &GetGlobalMutex()
 diff --git a/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.h b/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.h
-index 344eb45..bf2b437 100644
+index 344eb450..bf2b4377 100644
 --- a/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.h
 +++ b/Source/ThirdParty/ANGLE/src/libGLESv2/global_state.h
 @@ -104,7 +104,7 @@ class Thread;
@@ -161,7 +161,7 @@ index 344eb45..bf2b437 100644
  
  angle::GlobalMutex &GetGlobalMutex();
 diff --git a/Source/ThirdParty/xdgmime/CMakeLists.txt b/Source/ThirdParty/xdgmime/CMakeLists.txt
-index 3478d2d..8a439b3 100644
+index 3478d2d0..8a439b3c 100644
 --- a/Source/ThirdParty/xdgmime/CMakeLists.txt
 +++ b/Source/ThirdParty/xdgmime/CMakeLists.txt
 @@ -16,8 +16,10 @@ set(XDGMIME_SOURCES
@@ -177,7 +177,7 @@ index 3478d2d..8a439b3 100644
  
  if (COMPILER_IS_GCC_OR_CLANG)
 diff --git a/Source/WTF/wtf/CheckedArithmetic.h b/Source/WTF/wtf/CheckedArithmetic.h
-index c9d31d5..25b90a3 100644
+index c9d31d50..25b90a33 100644
 --- a/Source/WTF/wtf/CheckedArithmetic.h
 +++ b/Source/WTF/wtf/CheckedArithmetic.h
 @@ -34,7 +34,7 @@
@@ -190,7 +190,7 @@ index c9d31d5..25b90a3 100644
  #endif
  
 diff --git a/Source/WTF/wtf/CurrentTime.cpp b/Source/WTF/wtf/CurrentTime.cpp
-index c042a0f..2d253f5 100644
+index c042a0ff..2d253f54 100644
 --- a/Source/WTF/wtf/CurrentTime.cpp
 +++ b/Source/WTF/wtf/CurrentTime.cpp
 @@ -271,7 +271,7 @@ MonotonicTime MonotonicTime::now()
@@ -203,7 +203,7 @@ index c042a0f..2d253f5 100644
      clock_gettime(CLOCK_MONOTONIC, &ts);
      return fromRawSeconds(static_cast<double>(ts.tv_sec) + ts.tv_nsec / 1.0e9);
 diff --git a/Source/WTF/wtf/FastMalloc.cpp b/Source/WTF/wtf/FastMalloc.cpp
-index 48b0c31..6ed66c8 100644
+index 48b0c314..6ed66c8f 100644
 --- a/Source/WTF/wtf/FastMalloc.cpp
 +++ b/Source/WTF/wtf/FastMalloc.cpp
 @@ -58,8 +58,8 @@
@@ -218,7 +218,7 @@ index 48b0c31..6ed66c8 100644
  ForbidMallocUseForCurrentThreadScope::ForbidMallocUseForCurrentThreadScope()
  {
 diff --git a/Source/WTF/wtf/FileSystem.cpp b/Source/WTF/wtf/FileSystem.cpp
-index bcce638..f89c0ab 100644
+index bcce6384..f89c0abc 100644
 --- a/Source/WTF/wtf/FileSystem.cpp
 +++ b/Source/WTF/wtf/FileSystem.cpp
 @@ -41,6 +41,10 @@
@@ -247,7 +247,7 @@ index bcce638..f89c0ab 100644
  
  bool hardLinkOrCopyFile(const String& targetPath, const String& linkPath)
 diff --git a/Source/WTF/wtf/InlineASM.h b/Source/WTF/wtf/InlineASM.h
-index 8379a69..04f2529 100644
+index 8379a696..04f25298 100644
 --- a/Source/WTF/wtf/InlineASM.h
 +++ b/Source/WTF/wtf/InlineASM.h
 @@ -43,7 +43,7 @@
@@ -276,7 +276,7 @@ index 8379a69..04f2529 100644
      || COMPILER(MINGW)
      // GNU as-compatible syntax.
 diff --git a/Source/WTF/wtf/NumberOfCores.cpp b/Source/WTF/wtf/NumberOfCores.cpp
-index 7636865..dd2128e 100644
+index 76368651..dd2128ea 100644
 --- a/Source/WTF/wtf/NumberOfCores.cpp
 +++ b/Source/WTF/wtf/NumberOfCores.cpp
 @@ -30,6 +30,8 @@
@@ -300,7 +300,7 @@ index 7636865..dd2128e 100644
      long sysconfResult = sysconf(_SC_NPROCESSORS_ONLN);
  
 diff --git a/Source/WTF/wtf/Packed.h b/Source/WTF/wtf/Packed.h
-index 274b963..6a28e74 100644
+index 274b963f..6a28e743 100644
 --- a/Source/WTF/wtf/Packed.h
 +++ b/Source/WTF/wtf/Packed.h
 @@ -151,7 +151,7 @@ public:
@@ -313,7 +313,7 @@ index 274b963..6a28e74 100644
          // bits of any virtual address, bits 48 through 63, must be
          // copies of bit 47 (in a manner akin to sign extension).
 diff --git a/Source/WTF/wtf/PlatformEnable.h b/Source/WTF/wtf/PlatformEnable.h
-index e30a3d8..f2af1cf 100644
+index e30a3d8c..f2af1cf2 100644
 --- a/Source/WTF/wtf/PlatformEnable.h
 +++ b/Source/WTF/wtf/PlatformEnable.h
 @@ -664,7 +664,7 @@
@@ -326,7 +326,7 @@ index e30a3d8..f2af1cf 100644
  #endif
  
 diff --git a/Source/WTF/wtf/PlatformHave.h b/Source/WTF/wtf/PlatformHave.h
-index 949977f..8f56f56 100644
+index 949977fa..8f56f561 100644
 --- a/Source/WTF/wtf/PlatformHave.h
 +++ b/Source/WTF/wtf/PlatformHave.h
 @@ -389,7 +389,7 @@
@@ -339,7 +339,7 @@ index 949977f..8f56f56 100644
  #endif
  
 diff --git a/Source/WTF/wtf/PlatformOS.h b/Source/WTF/wtf/PlatformOS.h
-index f0d3cb5..85a57c2 100644
+index f0d3cb58..85a57c28 100644
 --- a/Source/WTF/wtf/PlatformOS.h
 +++ b/Source/WTF/wtf/PlatformOS.h
 @@ -57,6 +57,11 @@
@@ -363,7 +363,7 @@ index f0d3cb5..85a57c2 100644
      || OS(OPENBSD)          \
      || defined(unix)        \
 diff --git a/Source/WTF/wtf/PlatformRegisters.h b/Source/WTF/wtf/PlatformRegisters.h
-index b981c13..76cfd55 100644
+index b981c13e..76cfd550 100644
 --- a/Source/WTF/wtf/PlatformRegisters.h
 +++ b/Source/WTF/wtf/PlatformRegisters.h
 @@ -34,6 +34,8 @@
@@ -376,7 +376,7 @@ index b981c13..76cfd55 100644
  typedef ucontext_t mcontext_t;
  #else
 diff --git a/Source/WTF/wtf/RAMSize.cpp b/Source/WTF/wtf/RAMSize.cpp
-index 164de5e..c1d5524 100644
+index 164de5e7..c1d5524f 100644
 --- a/Source/WTF/wtf/RAMSize.cpp
 +++ b/Source/WTF/wtf/RAMSize.cpp
 @@ -33,6 +33,8 @@
@@ -400,7 +400,7 @@ index 164de5e..c1d5524 100644
      long pages = sysconf(_SC_PHYS_PAGES);
      long pageSize = sysconf(_SC_PAGE_SIZE);
 diff --git a/Source/WTF/wtf/StackBounds.cpp b/Source/WTF/wtf/StackBounds.cpp
-index e9d9d58..bc4d1c7 100644
+index e9d9d583..bc4d1c70 100644
 --- a/Source/WTF/wtf/StackBounds.cpp
 +++ b/Source/WTF/wtf/StackBounds.cpp
 @@ -42,6 +42,12 @@
@@ -426,7 +426,7 @@ index e9d9d58..bc4d1c7 100644
      pthread_attr_get_np(thread, &sattr);
  #else
 diff --git a/Source/WTF/wtf/posix/OSAllocatorPOSIX.cpp b/Source/WTF/wtf/posix/OSAllocatorPOSIX.cpp
-index 396de82..97159c3 100644
+index 396de820..97159c30 100644
 --- a/Source/WTF/wtf/posix/OSAllocatorPOSIX.cpp
 +++ b/Source/WTF/wtf/posix/OSAllocatorPOSIX.cpp
 @@ -115,7 +115,7 @@ void* OSAllocator::tryReserveAndCommit(size_t bytes, Usage usage, bool writable,
@@ -457,7 +457,7 @@ index 396de82..97159c3 100644
  #elif HAVE(MADV_FREE_REUSE)
      while (madvise(address, bytes, MADV_FREE_REUSABLE) == -1 && errno == EAGAIN) { }
 diff --git a/Source/WTF/wtf/posix/ThreadingPOSIX.cpp b/Source/WTF/wtf/posix/ThreadingPOSIX.cpp
-index e5cac15..5dabd58 100644
+index e5cac151..5dabd582 100644
 --- a/Source/WTF/wtf/posix/ThreadingPOSIX.cpp
 +++ b/Source/WTF/wtf/posix/ThreadingPOSIX.cpp
 @@ -42,6 +42,10 @@
@@ -481,7 +481,7 @@ index e5cac15..5dabd58 100644
      prctl(PR_SET_NAME, normalizeThreadName(threadName));
  #else
 diff --git a/Source/WebCore/inspector/InspectorFrontendHost.cpp b/Source/WebCore/inspector/InspectorFrontendHost.cpp
-index 5c4e75c..18e7db0 100644
+index 5c4e75c2..18e7db0e 100644
 --- a/Source/WebCore/inspector/InspectorFrontendHost.cpp
 +++ b/Source/WebCore/inspector/InspectorFrontendHost.cpp
 @@ -395,6 +395,8 @@ String InspectorFrontendHost::platform() const
@@ -494,7 +494,7 @@ index 5c4e75c..18e7db0 100644
      return "linux"_s;
  #elif OS(FREEBSD)
 diff --git a/Source/WebCore/page/NavigatorBase.cpp b/Source/WebCore/page/NavigatorBase.cpp
-index bcf4cf6..ab71458 100644
+index bcf4cf61..ab714583 100644
 --- a/Source/WebCore/page/NavigatorBase.cpp
 +++ b/Source/WebCore/page/NavigatorBase.cpp
 @@ -100,6 +100,8 @@ String NavigatorBase::platform() const
@@ -507,7 +507,7 @@ index bcf4cf6..ab71458 100644
      return "Win32"_s;
  #else
 diff --git a/Source/WebCore/platform/graphics/gbm/GraphicsContextGLANGLELinux.cpp b/Source/WebCore/platform/graphics/gbm/GraphicsContextGLANGLELinux.cpp
-index f8627d2..1244edb 100644
+index f8627d2c..1244edb2 100644
 --- a/Source/WebCore/platform/graphics/gbm/GraphicsContextGLANGLELinux.cpp
 +++ b/Source/WebCore/platform/graphics/gbm/GraphicsContextGLANGLELinux.cpp
 @@ -108,7 +108,7 @@ RefPtr<PixelBuffer> GraphicsContextGLANGLE::readCompositedResults()
@@ -520,7 +520,7 @@ index f8627d2..1244edb 100644
      if (s_currentContext == this)
          return true;
 diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp
-index 0ff9f86..af90bc3 100644
+index 0ff9f868..af90bc3a 100644
 --- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp
 +++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp
 @@ -2231,6 +2231,8 @@ void MediaPlayerPrivateGStreamer::configureDownloadBuffer(GstElement* element)
@@ -533,7 +533,7 @@ index 0ff9f86..af90bc3 100644
      GUniquePtr<char> mediaDiskCachePath(g_build_filename(G_DIR_SEPARATOR_S, "var", "tmp", nullptr));
  #endif
 diff --git a/Source/WebKit/CMakeLists.txt b/Source/WebKit/CMakeLists.txt
-index 8c0b085..c634c4c 100644
+index 8c0b0853..c634c4c3 100644
 --- a/Source/WebKit/CMakeLists.txt
 +++ b/Source/WebKit/CMakeLists.txt
 @@ -411,6 +411,10 @@ if (UNIX)
@@ -548,7 +548,7 @@ index 8c0b085..c634c4c 100644
      if (WebKit_USE_PREFIX_HEADER)
          get_target_property(OLD_COMPILE_FLAGS ${_target} COMPILE_FLAGS)
 diff --git a/Source/WebKit/Platform/IPC/Connection.cpp b/Source/WebKit/Platform/IPC/Connection.cpp
-index 5860827..7c79f77 100644
+index 5860827d..7c79f777 100644
 --- a/Source/WebKit/Platform/IPC/Connection.cpp
 +++ b/Source/WebKit/Platform/IPC/Connection.cpp
 @@ -1121,8 +1121,11 @@ void Connection::didFailToSendSyncMessage()
@@ -565,7 +565,7 @@ index 5860827..7c79f77 100644
  
  void Connection::enqueueIncomingMessage(std::unique_ptr<Decoder> incomingMessage)
 diff --git a/Source/WebKit/Platform/IPC/unix/ConnectionUnix.cpp b/Source/WebKit/Platform/IPC/unix/ConnectionUnix.cpp
-index e01364f..355a516 100644
+index e01364ff..355a5169 100644
 --- a/Source/WebKit/Platform/IPC/unix/ConnectionUnix.cpp
 +++ b/Source/WebKit/Platform/IPC/unix/ConnectionUnix.cpp
 @@ -230,7 +230,7 @@ bool Connection::processMessage()
@@ -620,7 +620,7 @@ index e01364f..355a516 100644
      if (options & SetCloexecOnServer) {
          // Don't expose the child socket to the parent process.
 diff --git a/Source/WebKit/Shared/AuxiliaryProcess.cpp b/Source/WebKit/Shared/AuxiliaryProcess.cpp
-index f5a986d..bc0b9fc 100644
+index f5a986df..bc0b9fc4 100644
 --- a/Source/WebKit/Shared/AuxiliaryProcess.cpp
 +++ b/Source/WebKit/Shared/AuxiliaryProcess.cpp
 @@ -45,6 +45,10 @@
@@ -661,7 +661,7 @@ index f5a986d..bc0b9fc 100644
  {
      m_connection->invalidate();
 diff --git a/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp b/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp
-index abb9dea..eca0e0d 100644
+index abb9dea0..eca0e0d3 100644
 --- a/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp
 +++ b/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp
 @@ -122,6 +122,8 @@ static const char* hardwareAccelerationPolicy(WebKitURISchemeRequest* request)
@@ -683,7 +683,7 @@ index abb9dea..eca0e0d 100644
  #if USE(EGL)
      if (isEGL) {
 diff --git a/Source/WebKit/WebProcess/WebCoreSupport/WebWorkerClient.cpp b/Source/WebKit/WebProcess/WebCoreSupport/WebWorkerClient.cpp
-index 58eb170..ccd190b 100644
+index 58eb170c..ccd190bb 100644
 --- a/Source/WebKit/WebProcess/WebCoreSupport/WebWorkerClient.cpp
 +++ b/Source/WebKit/WebProcess/WebCoreSupport/WebWorkerClient.cpp
 @@ -40,6 +40,8 @@
@@ -696,7 +696,7 @@ index 58eb170..ccd190b 100644
  using namespace WebCore;
  
 diff --git a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.cpp b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.cpp
-index c50d982..0e5c6f1 100644
+index c50d9824..0e5c6f11 100644
 --- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.cpp
 +++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.cpp
 @@ -504,7 +504,7 @@ void DrawingAreaCoordinatedGraphics::displayDidRefresh()
@@ -718,7 +718,7 @@ index c50d982..0e5c6f1 100644
          m_webPage.corePage()->settings().setForceCompositingMode(true);
          m_alwaysUseCompositing = true;
 diff --git a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.h b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.h
-index a5b7915..69c67a7 100644
+index a5b79158..69c67a7a 100644
 --- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.h
 +++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.h
 @@ -87,7 +87,7 @@ private:
@@ -740,7 +740,7 @@ index a5b7915..69c67a7 100644
      WebCore::FloatPoint m_transientZoomInitialOrigin;
  #endif
 diff --git a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.cpp b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.cpp
-index f2b231c..4fb3e56 100644
+index f2b231c3..4fb3e565 100644
 --- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.cpp
 +++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.cpp
 @@ -150,7 +150,7 @@ void LayerTreeHost::layerFlushTimerFired()
@@ -780,7 +780,7 @@ index f2b231c..4fb3e56 100644
  {
      FrameView& frameView = *m_webPage.mainFrameView();
 diff --git a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h
-index 45e4bbd..d3b5d2d 100644
+index 45e4bbd8..d3b5d2de 100644
 --- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h
 +++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h
 @@ -99,7 +99,7 @@ public:
@@ -820,7 +820,7 @@ index 45e4bbd..d3b5d2d 100644
  inline void LayerTreeHost::commitTransientZoom(double, WebCore::FloatPoint) { }
  #endif
 diff --git a/Source/WebKit/WebProcess/WebProcess.cpp b/Source/WebKit/WebProcess/WebProcess.cpp
-index 54e333b..b1784ed 100644
+index 54e333b6..b1784ed6 100644
 --- a/Source/WebKit/WebProcess/WebProcess.cpp
 +++ b/Source/WebKit/WebProcess/WebProcess.cpp
 @@ -395,7 +395,7 @@ void WebProcess::initializeConnection(IPC::Connection* connection)
@@ -833,7 +833,7 @@ index 54e333b..b1784ed 100644
  #endif
  
 diff --git a/Source/bmalloc/bmalloc/AvailableMemory.cpp b/Source/bmalloc/bmalloc/AvailableMemory.cpp
-index c89de56..c342e71 100644
+index c89de568..c342e710 100644
 --- a/Source/bmalloc/bmalloc/AvailableMemory.cpp
 +++ b/Source/bmalloc/bmalloc/AvailableMemory.cpp
 @@ -47,6 +47,9 @@
@@ -859,7 +859,7 @@ index c89de56..c342e71 100644
      long pages = sysconf(_SC_PHYS_PAGES);
      long pageSize = sysconf(_SC_PAGE_SIZE);
 diff --git a/Source/bmalloc/bmalloc/BPlatform.h b/Source/bmalloc/bmalloc/BPlatform.h
-index 071b691..b443200 100644
+index 071b6911..b4432003 100644
 --- a/Source/bmalloc/bmalloc/BPlatform.h
 +++ b/Source/bmalloc/bmalloc/BPlatform.h
 @@ -48,6 +48,10 @@
@@ -874,7 +874,7 @@ index 071b691..b443200 100644
  #define BOS_FREEBSD 1
  #endif
 diff --git a/Source/bmalloc/bmalloc/Scavenger.cpp b/Source/bmalloc/bmalloc/Scavenger.cpp
-index 86dbb86..b2199d7 100644
+index 86dbb864..b2199d74 100644
 --- a/Source/bmalloc/bmalloc/Scavenger.cpp
 +++ b/Source/bmalloc/bmalloc/Scavenger.cpp
 @@ -44,6 +44,10 @@
@@ -898,7 +898,7 @@ index 86dbb86..b2199d7 100644
      // Truncate the given name since Linux limits the size of the thread name 16 including null terminator.
      std::array<char, 16> buf;
 diff --git a/Source/bmalloc/bmalloc/VMAllocate.h b/Source/bmalloc/bmalloc/VMAllocate.h
-index 4315b4c..147d766 100644
+index 4315b4c0..147d7666 100644
 --- a/Source/bmalloc/bmalloc/VMAllocate.h
 +++ b/Source/bmalloc/bmalloc/VMAllocate.h
 @@ -39,13 +39,17 @@
@@ -948,7 +948,7 @@ index 4315b4c..147d766 100644
      static size_t cached;
      if (!cached)
 diff --git a/Source/cmake/GStreamerChecks.cmake b/Source/cmake/GStreamerChecks.cmake
-index ba8423e..f8e72e1 100644
+index ba8423e2..f8e72e11 100644
 --- a/Source/cmake/GStreamerChecks.cmake
 +++ b/Source/cmake/GStreamerChecks.cmake
 @@ -73,7 +73,7 @@ if (ENABLE_MEDIA_STREAM AND ENABLE_WEB_RTC)
@@ -961,7 +961,7 @@ index ba8423e..f8e72e1 100644
          endif ()
      else ()
 diff --git a/Source/cmake/WebKitCommon.cmake b/Source/cmake/WebKitCommon.cmake
-index cc96551..74b0dff 100644
+index cc965512..74b0dffc 100644
 --- a/Source/cmake/WebKitCommon.cmake
 +++ b/Source/cmake/WebKitCommon.cmake
 @@ -158,7 +158,9 @@ if (NOT HAS_RUN_WEBKIT_COMMON)
@@ -976,17 +976,17 @@ index cc96551..74b0dff 100644
      # -----------------------------------------------------------------------------
      # Install JavaScript shell
 -- 
-2.45.2
+2.54.0
 
 
-From 07ea6126e7481578552e93dc4c63bd9ee344a187 Mon Sep 17 00:00:00 2001
+From fcd75fd143668656b6214a534d0436b69bc50250 Mon Sep 17 00:00:00 2001
 From: Gerasim Troeglazov <3dEyes@gmail.com>
 Date: Fri, 24 Feb 2023 18:36:15 +1000
 Subject: Fix build without MACHINE_CONTEXT
 
 
 diff --git a/Source/JavaScriptCore/wasm/WasmFaultSignalHandler.cpp b/Source/JavaScriptCore/wasm/WasmFaultSignalHandler.cpp
-index d1a5e8b..4e0efd5 100644
+index d1a5e8b5..4e0efd51 100644
 --- a/Source/JavaScriptCore/wasm/WasmFaultSignalHandler.cpp
 +++ b/Source/JavaScriptCore/wasm/WasmFaultSignalHandler.cpp
 @@ -53,7 +53,7 @@ static constexpr bool verbose = false;
@@ -1007,17 +1007,17 @@ index d1a5e8b..4e0efd5 100644
  }
  
 -- 
-2.45.2
+2.54.0
 
 
-From 2b1b321ef13c231bf5d6b2fd21da4dab09243c04 Mon Sep 17 00:00:00 2001
+From da8eabec9a68e69fb5ad08976e58d440be7a13f3 Mon Sep 17 00:00:00 2001
 From: PulkoMandy <pulkomandy@pulkomandy.tk>
 Date: Tue, 13 Aug 2024 21:00:16 +0200
 Subject: Fix build with current versions of libmxl2 and llvm
 
 
 diff --git a/Source/WebCore/xml/XSLTProcessor.h b/Source/WebCore/xml/XSLTProcessor.h
-index 80813f4..7aeb88b 100644
+index 80813f44..7aeb88be 100644
 --- a/Source/WebCore/xml/XSLTProcessor.h
 +++ b/Source/WebCore/xml/XSLTProcessor.h
 @@ -61,7 +61,7 @@ public:
@@ -1030,7 +1030,7 @@ index 80813f4..7aeb88b 100644
      
      // Only for libXSLT callbacks
 diff --git a/Source/WebCore/xml/XSLTProcessorLibxslt.cpp b/Source/WebCore/xml/XSLTProcessorLibxslt.cpp
-index c4da911..4db3652 100644
+index c4da9114..4db36520 100644
 --- a/Source/WebCore/xml/XSLTProcessorLibxslt.cpp
 +++ b/Source/WebCore/xml/XSLTProcessorLibxslt.cpp
 @@ -62,7 +62,7 @@ void XSLTProcessor::genericErrorFunc(void*, const char*, ...)
@@ -1043,5 +1043,463 @@ index c4da911..4db3652 100644
      PageConsoleClient* console = static_cast<PageConsoleClient*>(userData);
      if (!console)
 -- 
-2.45.2
+2.54.0
+
+
+From 6fdbeadd52a1801fd8e552ab5801e287aff63448 Mon Sep 17 00:00:00 2001
+From: Luc Schrijvers <begasus@gmail.com>
+Date: Sat, 25 Jul 2026 09:46:55 +0200
+Subject: Haiku (beta6), has memmem now
+
+
+diff --git a/Source/WTF/wtf/PlatformHave.h b/Source/WTF/wtf/PlatformHave.h
+index 8f56f561..949977fa 100644
+--- a/Source/WTF/wtf/PlatformHave.h
++++ b/Source/WTF/wtf/PlatformHave.h
+@@ -389,7 +389,7 @@
+ #define HAVE_STACK_BOUNDS_FOR_NEW_THREAD 1
+ #endif
+ 
+-#if !OS(WINDOWS) && !PLATFORM(PLAYSTATION) && !OS(HAIKU)
++#if !OS(WINDOWS) && !PLATFORM(PLAYSTATION)
+ #define HAVE_MEMMEM 1
+ #endif
+ 
+-- 
+2.54.0
+
+
+From b894027dfa63f18510ec9590c76341aa8a1eebf7 Mon Sep 17 00:00:00 2001
+From: Luc Schrijvers <begasus@gmail.com>
+Date: Sat, 25 Jul 2026 16:40:13 +0200
+Subject: Disable warnings turning into errors (new glib)
+
+
+diff --git a/Source/JavaScriptCore/API/glib/JSCClass.cpp b/Source/JavaScriptCore/API/glib/JSCClass.cpp
+index 49e2ddfe..a6d8266f 100644
+--- a/Source/JavaScriptCore/API/glib/JSCClass.cpp
++++ b/Source/JavaScriptCore/API/glib/JSCClass.cpp
+@@ -567,7 +567,6 @@ static GRefPtr<JSCValue> jscClassCreateConstructor(JSCClass* jscClass, const cha
+  * @jsc_class: a #JSCClass
+  * @name: (nullable): the constructor name or %NULL
+  * @callback: (scope async): a #GCallback to be called to create an instance of @jsc_class
+- * @user_data: (closure): user data to pass to @callback
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the constructor return value
+  * @n_params: the number of parameter types to follow or 0 if constructor doesn't receive parameters.
+@@ -616,7 +615,6 @@ JSCValue* jsc_class_add_constructor(JSCClass* jscClass, const char* name, GCallb
+  * @jsc_class: a #JSCClass
+  * @name: (nullable): the constructor name or %NULL
+  * @callback: (scope async): a #GCallback to be called to create an instance of @jsc_class
+- * @user_data: (closure): user data to pass to @callback
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the constructor return value
+  * @n_parameters: the number of parameters
+@@ -662,7 +660,6 @@ JSCValue* jsc_class_add_constructorv(JSCClass* jscClass, const char* name, GCall
+  * @jsc_class: a #JSCClass
+  * @name: (nullable): the constructor name or %NULL
+  * @callback: (scope async): a #GCallback to be called to create an instance of @jsc_class
+- * @user_data: (closure): user data to pass to @callback
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the constructor return value
+  *
+@@ -714,7 +711,6 @@ static void jscClassAddMethod(JSCClass* jscClass, const char* name, GCallback ca
+  * @jsc_class: a #JSCClass
+  * @name: the method name
+  * @callback: (scope async): a #GCallback to be called to invoke method @name of @jsc_class
+- * @user_data: (closure): user data to pass to @callback
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the method return value, or %G_TYPE_NONE if the method is void.
+  * @n_params: the number of parameter types to follow or 0 if the method doesn't receive parameters.
+@@ -755,7 +751,6 @@ void jsc_class_add_method(JSCClass* jscClass, const char* name, GCallback callba
+  * @jsc_class: a #JSCClass
+  * @name: the method name
+  * @callback: (scope async): a #GCallback to be called to invoke method @name of @jsc_class
+- * @user_data: (closure): user data to pass to @callback
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the method return value, or %G_TYPE_NONE if the method is void.
+  * @n_parameters: the number of parameter types to follow or 0 if the method doesn't receive parameters.
+@@ -794,7 +789,6 @@ void jsc_class_add_methodv(JSCClass* jscClass, const char* name, GCallback callb
+  * @jsc_class: a #JSCClass
+  * @name: the method name
+  * @callback: (scope async): a #GCallback to be called to invoke method @name of @jsc_class
+- * @user_data: (closure): user data to pass to @callback
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the method return value, or %G_TYPE_NONE if the method is void.
+  *
+@@ -825,7 +819,6 @@ void jsc_class_add_method_variadic(JSCClass* jscClass, const char* name, GCallba
+  * @property_type: the #GType of the property value
+  * @getter: (scope async) (nullable): a #GCallback to be called to get the property value
+  * @setter: (scope async) (nullable): a #GCallback to be called to set the property value
+- * @user_data: (closure): user data to pass to @getter and @setter
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  *
+  * Add a property with @name to @jsc_class. When the property value needs to be getted, @getter is called
+diff --git a/Source/JavaScriptCore/API/glib/JSCContext.cpp b/Source/JavaScriptCore/API/glib/JSCContext.cpp
+index 2bef842a..08556fc1 100644
+--- a/Source/JavaScriptCore/API/glib/JSCContext.cpp
++++ b/Source/JavaScriptCore/API/glib/JSCContext.cpp
+@@ -768,7 +768,6 @@ void jsc_context_clear_exception(JSCContext* context)
+  * jsc_context_push_exception_handler:
+  * @context: a #JSCContext
+  * @handler: a #JSCExceptionHandler
+- * @user_data: (closure): user data to pass to @handler
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  *
+  * Push an exception handler in @context. Whenever a JavaScript exception happens in
+diff --git a/Source/JavaScriptCore/API/glib/JSCValue.cpp b/Source/JavaScriptCore/API/glib/JSCValue.cpp
+index d3366442..b52aa1e2 100644
+--- a/Source/JavaScriptCore/API/glib/JSCValue.cpp
++++ b/Source/JavaScriptCore/API/glib/JSCValue.cpp
+@@ -1127,7 +1127,6 @@ static void jscValueObjectDefinePropertyAccessor(JSCValue* value, const char* pr
+  * @property_type: the #GType of the property
+  * @getter: (scope async) (nullable): a #GCallback to be called to get the property value
+  * @setter: (scope async) (nullable): a #GCallback to be called to set the property value
+- * @user_data: (closure): user data to pass to @getter and @setter
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  *
+  * Define or modify a property with @property_name in object referenced by @value. When the
+@@ -1181,7 +1180,6 @@ static GRefPtr<JSCValue> jscValueFunctionCreate(JSCContext* context, const char*
+  * @context: a #JSCContext:
+  * @name: (nullable): the function name or %NULL
+  * @callback: (scope async): a #GCallback.
+- * @user_data: (closure): user data to pass to @callback.
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the function return value, or %G_TYPE_NONE if the function is void.
+  * @n_params: the number of parameter types to follow or 0 if the function doesn't receive parameters.
+@@ -1222,7 +1220,6 @@ JSCValue* jsc_value_new_function(JSCContext* context, const char* name, GCallbac
+  * @context: a #JSCContext
+  * @name: (nullable): the function name or %NULL
+  * @callback: (scope async): a #GCallback.
+- * @user_data: (closure): user data to pass to @callback.
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the function return value, or %G_TYPE_NONE if the function is void.
+  * @n_parameters: the number of parameters
+@@ -1261,7 +1258,6 @@ JSCValue* jsc_value_new_functionv(JSCContext* context, const char* name, GCallba
+  * @context: a #JSCContext
+  * @name: (nullable): the function name or %NULL
+  * @callback: (scope async): a #GCallback.
+- * @user_data: (closure): user data to pass to @callback.
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  * @return_type: the #GType of the function return value, or %G_TYPE_NONE if the function is void.
+  *
+@@ -1475,7 +1471,6 @@ WEBKIT_DEFINE_ASYNC_DATA_STRUCT(ArrayBufferDeallocatorContext)
+  * @data: Pointer to a region of memory.
+  * @size: Size in bytes of the memory region.
+  * @destroy_notify: (nullable): destroy notifier for @user_data.
+- * @user_data: (closure): user data.
+  *
+  * Creates a new %ArrayBuffer from existing @data in memory.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitCookieManager.cpp b/Source/WebKit/UIProcess/API/glib/WebKitCookieManager.cpp
+index a0334b02..7a00fa59 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitCookieManager.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitCookieManager.cpp
+@@ -225,7 +225,6 @@ void webkit_cookie_manager_set_accept_policy(WebKitCookieManager* manager, WebKi
+  * @cookie_manager: a #WebKitCookieManager
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get the cookie acceptance policy of @cookie_manager.
+  *
+@@ -272,7 +271,6 @@ WebKitCookieAcceptPolicy webkit_cookie_manager_get_accept_policy_finish(WebKitCo
+  * @cookie: the #SoupCookie to be added
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously add a #SoupCookie to the underlying storage.
+  *
+@@ -318,7 +316,6 @@ gboolean webkit_cookie_manager_add_cookie_finish(WebKitCookieManager* manager, G
+  * @uri: the URI associated to the cookies to be retrieved
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get a list of #SoupCookie from @cookie_manager.
+  *
+@@ -376,7 +373,6 @@ GList* webkit_cookie_manager_get_cookies_finish(WebKitCookieManager* manager, GA
+  * @cookie: the #SoupCookie to be deleted
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously delete a #SoupCookie from the current session.
+  *
+@@ -422,7 +418,6 @@ gboolean webkit_cookie_manager_delete_cookie_finish(WebKitCookieManager* manager
+  * @cookie_manager: a #WebKitCookieManager
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get the list of domains for which @cookie_manager contains cookies.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitFaviconDatabase.cpp b/Source/WebKit/UIProcess/API/glib/WebKitFaviconDatabase.cpp
+index e62564b4..ac0d44d3 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitFaviconDatabase.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitFaviconDatabase.cpp
+@@ -205,7 +205,6 @@ void webkitFaviconDatabaseGetFaviconInternal(WebKitFaviconDatabase* database, co
+  * @cancellable: (allow-none): A #GCancellable or %NULL.
+  * @callback: (scope async): A #GAsyncReadyCallback to call when the request is
+  *            satisfied or %NULL if you don't care about the result.
+- * @user_data: (closure): The data to pass to @callback.
+  *
+  * Asynchronously obtains a favicon image.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitNetworkSession.cpp b/Source/WebKit/UIProcess/API/glib/WebKitNetworkSession.cpp
+index 940bdf77..cb38a384 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitNetworkSession.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitNetworkSession.cpp
+@@ -553,7 +553,6 @@ void webkit_network_session_set_memory_pressure_settings(WebKitMemoryPressureSet
+  * @session: a #WebKitNetworkSession
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get the list of #WebKitITPThirdParty seen for @session.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitUserContentFilterStore.cpp b/Source/WebKit/UIProcess/API/glib/WebKitUserContentFilterStore.cpp
+index 6952a86a..4335f7ff 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitUserContentFilterStore.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitUserContentFilterStore.cpp
+@@ -216,7 +216,6 @@ static void webkitUserContentFilterStoreSaveBytes(GRefPtr<GTask>&& task, String&
+  * @source: #GBytes containing the rule set in JSON format
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when saving is completed
+- * @user_data: (closure): the data to pass to the callback function
+  *
+  * Asynchronously save a content filter from a set source rule.
+  *
+@@ -282,7 +281,6 @@ WEBKIT_DEFINE_ASYNC_DATA_STRUCT(SaveTaskData)
+  * @file: a #GFile containing the rule set in JSON format
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when saving is completed
+- * @user_data: (closure): the data to pass to the callback function
+  *
+  * Asynchronously save a content filter from the contents of a file.
+  *
+@@ -365,7 +363,6 @@ WebKitUserContentFilter* webkit_user_content_filter_store_save_from_file_finish(
+  * @identifier: a filter identifier
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the removal is completed
+- * @user_data: (closure): the data to pass to the callback function
+  *
+  * Asynchronously remove a content filter given its @identifier.
+  *
+@@ -424,7 +421,6 @@ gboolean webkit_user_content_filter_store_remove_finish(WebKitUserContentFilterS
+  * @identifier: a filter identifier
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the load is completed
+- * @user_data: (closure): the data to pass to the callback function
+  *
+  * Asynchronously load a content filter given its @identifier.
+  *
+@@ -485,7 +481,6 @@ WebKitUserContentFilter* webkit_user_content_filter_store_load_finish(WebKitUser
+  * @store: a #WebKitUserContentFilterStore
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the removal is completed
+- * @user_data: (closure): the data to pass to the callback function
+  *
+  * Asynchronously retrieve a list of the identifiers for all the stored filters.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp b/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp
+index 44784336..ffc42a03 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp
+@@ -1267,7 +1267,6 @@ void webkit_web_context_set_additional_plugins_directory(WebKitWebContext*, cons
+  * @context: a #WebKitWebContext
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get the list of installed plugins.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebResource.cpp b/Source/WebKit/UIProcess/API/glib/WebKitWebResource.cpp
+index 41e738d2..22fad7bd 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebResource.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebResource.cpp
+@@ -371,7 +371,6 @@ static void resourceDataCallback(API::Data* wkData, GTask* task)
+  * @resource: a #WebKitWebResource
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get the raw data for @resource.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp b/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp
+index 837aa061..3e8c459e 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp
+@@ -3830,7 +3830,6 @@ gdouble webkit_web_view_get_zoom_level(WebKitWebView* webView)
+  * @command: the command to check
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously check if it is possible to execute the given editing command.
+  *
+@@ -4035,7 +4034,6 @@ static void webkitWebViewEvaluateJavascriptInternal(WebKitWebView* webView, cons
+  * @source_uri: (nullable): the source URI
+  * @cancellable: (nullable): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the script finished
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously evaluate @script in the script world with name @world_name of the main frame current context in @web_view.
+  * If @world_name is %NULL, the default world is used. Any value that is not %NULL is a distinct world.
+@@ -4172,7 +4170,6 @@ static void webkitWebViewCallAsyncJavascriptFunctionInternal(WebKitWebView* webV
+  * @source_uri: (nullable): the source URI
+  * @cancellable: (nullable): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the script finished
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously call @body with @arguments in the script world with name @world_name of the main frame current context in @web_view.
+  * The @arguments values must be one of the following types, or contain only the following GVariant types: number, string and dictionary.
+@@ -4268,7 +4265,6 @@ JSCValue* webkit_web_view_call_async_javascript_function_finish(WebKitWebView* w
+  * @script: the script to run
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the script finished
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously run @script in the context of the current page in @web_view.
+  *
+@@ -4357,7 +4353,6 @@ WebKitJavascriptResult* webkit_web_view_run_javascript_finish(WebKitWebView* web
+  * @world_name: the name of a #WebKitScriptWorld
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the script finished
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously run @script in the script world.
+  *
+@@ -4386,7 +4381,6 @@ void webkit_web_view_run_javascript_in_world(WebKitWebView* webView, const gchar
+  * @world_name (nullable): the name of a #WebKitScriptWorld, if no name (i.e. %NULL) is provided, the default world is used. Any value that is not %NULL is a distinct world.
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the script finished
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously run @body in the script world with name @world_name of the current page context in
+  * @web_view. If WebKitSettings:enable-javascript is FALSE, this method will do nothing. This API
+@@ -4498,7 +4492,6 @@ static void resourcesStreamReadCallback(GObject* object, GAsyncResult* result, g
+  * @resource: the location of the resource to load
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the script finished
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously run the script from @resource.
+  *
+@@ -4655,7 +4648,6 @@ static void getContentsAsMHTMLDataCallback(API::Data* wkData, GTask* taskPtr)
+  * @save_mode: the #WebKitSaveMode specifying how the web page should be saved.
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously save the current web page.
+  *
+@@ -4718,7 +4710,6 @@ GInputStream* webkit_web_view_save_finish(WebKitWebView* webView, GAsyncResult*
+  * @save_mode: the #WebKitSaveMode specifying how the web page should be saved.
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously save the current web page.
+  *
+@@ -4855,7 +4846,6 @@ gboolean webkit_web_view_get_tls_info(WebKitWebView* webView, GTlsCertificate**
+  * @options: #WebKitSnapshotOptions for the snapshot
+  * @cancellable: (allow-none): a #GCancellable
+  * @callback: (scope async): a #GAsyncReadyCallback
+- * @user_data: (closure): user data
+  *
+  * Asynchronously retrieves a snapshot of @web_view for @region.
+  *
+@@ -5051,7 +5041,6 @@ void webkit_web_view_restore_session_state(WebKitWebView* webView, WebKitWebView
+  * webkit_web_view_add_frame_displayed_callback:
+  * @web_view: a #WebKitWebView
+  * @callback: a #WebKitFrameDisplayedCallback
+- * @user_data: (closure): user data to pass to @callback
+  * @destroy_notify: (nullable): destroy notifier for @user_data
+  *
+  * Add a callback to be called when the backend notifies that a frame has been displayed in @web_view.
+@@ -5104,7 +5093,6 @@ void webkit_web_view_remove_frame_displayed_callback(WebKitWebView* webView, uns
+  * @message: a #WebKitUserMessage
+  * @cancellable: (nullable): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): (nullable): A #GAsyncReadyCallback to call when the request is satisfied or %NULL
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Send @message to the #WebKitWebPage corresponding to @web_view.
+  *
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp b/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp
+index d87f96b7..d2965f65 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp
+@@ -1154,7 +1154,6 @@ static OptionSet<WebsiteDataType> toWebsiteDataTypes(WebKitWebsiteDataTypes type
+  * @types: #WebKitWebsiteDataTypes
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get the list of #WebKitWebsiteData for the given @types.
+  *
+@@ -1209,7 +1208,6 @@ GList* webkit_website_data_manager_fetch_finish(WebKitWebsiteDataManager* manage
+  * @website_data: (element-type WebKitWebsiteData): a #GList of #WebKitWebsiteData
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously removes the website data in the given @website_data list.
+  *
+@@ -1276,7 +1274,6 @@ gboolean webkit_website_data_manager_remove_finish(WebKitWebsiteDataManager* man
+  * @timespan: a #GTimeSpan
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously clear the website data of the given @types modified in the past @timespan.
+  *
+@@ -1596,7 +1593,6 @@ GList* webkit_itp_third_party_get_first_parties(WebKitITPThirdParty* thirdParty)
+  * @manager: a #WebKitWebsiteDataManager
+  * @cancellable: (allow-none): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Asynchronously get the list of #WebKitITPThirdParty seen for @manager.
+  *
+diff --git a/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebExtension.cpp b/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebExtension.cpp
+index 18f6a88e..aac6ef83 100644
+--- a/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebExtension.cpp
++++ b/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebExtension.cpp
+@@ -252,7 +252,6 @@ WebKitWebPage* webkit_web_extension_get_page(WebKitWebExtension* extension, guin
+  * @message: a #WebKitUserMessage
+  * @cancellable: (nullable): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): (nullable): A #GAsyncReadyCallback to call when the request is satisfied or %NULL
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Send @message to the #WebKitWebContext corresponding to @extension. If @message is floating, it's consumed.
+  *
+diff --git a/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebPage.cpp b/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebPage.cpp
+index eca5616b..de761f1e 100644
+--- a/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebPage.cpp
++++ b/Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebPage.cpp
+@@ -906,7 +906,6 @@ WebKitWebEditor* webkit_web_page_get_editor(WebKitWebPage* webPage)
+  * @message: a #WebKitUserMessage
+  * @cancellable: (nullable): a #GCancellable or %NULL to ignore
+  * @callback: (scope async): (nullable): A #GAsyncReadyCallback to call when the request is satisfied or %NULL
+- * @user_data: (closure): the data to pass to callback function
+  *
+  * Send @message to the #WebKitWebView corresponding to @web_page. If @message is floating, it's consumed.
+  *
+diff --git a/Source/WebKit/WebProcess/InjectedBundle/API/gtk/DOM/WebKitDOMEventTarget.h b/Source/WebKit/WebProcess/InjectedBundle/API/gtk/DOM/WebKitDOMEventTarget.h
+index 75aac189..cbe39b47 100644
+--- a/Source/WebKit/WebProcess/InjectedBundle/API/gtk/DOM/WebKitDOMEventTarget.h
++++ b/Source/WebKit/WebProcess/InjectedBundle/API/gtk/DOM/WebKitDOMEventTarget.h
+@@ -92,7 +92,7 @@ WEBKIT_DEPRECATED gboolean  webkit_dom_event_target_add_event_listener(WebKitDOM
+  * webkit_dom_event_target_remove_event_listener:
+  * @target: A #WebKitDOMEventTarget
+  * @event_name: A #gchar
+- * @handler: (scope call): A #GCallback
++ * @handler: (type gpointer): A #GCallback
+  * @use_capture: A #gboolean
+  *
+  * Returns: a #gboolean
+-- 
+2.54.0
 
